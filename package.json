@@ -1,0 +1,13 @@
+{
+  "name": "spectrum-game",
+  "version": "1.0.0",
+  "description": "A repository to hold examples, POCs and tests of ZX spectrum games",
+  "main": "index.js",
+  "repository": "git@github.com:jayjaybeeuk/spectrum-game.git",
+  "author": "James Bolton <james@james-bolton.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:helloworld": "./scripts/zxbasic/zxbc.py ./games/helloworld.bas -o ./dist/helloworld22.tap --tap --BASIC --autorun"
+  }
+}
