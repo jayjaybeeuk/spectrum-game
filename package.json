@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:helloworld": "./scripts/zxbasic/zxbc.py ./games/helloworld.bas -o ./dist/helloworld22.tap --tap --BASIC --autorun"
+    "build:helloworld": "./libs/zxbasic/zxbc.py ./games/helloworld.bas -o ./dist/helloworld.tap --tap --BASIC --autorun",
+    "build": "./scripts/build.sh && npm run build:helloworld "
   }
 }
