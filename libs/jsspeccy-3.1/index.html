@@ -14,9 +14,12 @@
       }
     </style>
   </head>
-  <body
-    onload="emu = JSSpeccy(document.getElementById('jsspeccy'), {zoom: 2, sandbox: false, openUrl: 'https://spectrum-game-eight.vercel.app/helloworld.tap'})"
-  >
+  <body>
     <div id="jsspeccy"></div>
+    <script>
+      let emu = JSSpeccy(document.getElementById("jsspeccy"));
+      emu.setZoom(2);
+      emu.openUrl("https://spectrum-game-eight.vercel.app/helloworld.tap");
+    </script>
   </body>
 </html>
