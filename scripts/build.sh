@@ -6,5 +6,5 @@ mkdir -p dist
 # Clear the dist folder
 rm -rf dist/*
 
-# Copy the jsspeccy installation file
-cp -r libs/jsspeccy-3.1/* dist/
+# build the tapes
+./libs/zxbasic/zxbc.py ./games/helloworld.bas -o ./dist/helloworld.tap --tap --BASIC --autorun
