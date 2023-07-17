@@ -1,16 +1,12 @@
-import { useRef } from "react";
-import useLoadJSSpeccy from "./hooks/useLoadJSSpeccy";
+import Home from "./pages";
+import { ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
 
 function App() {
-  const jssSpeccyRef = useRef<HTMLDivElement>(null);
-
-  useLoadJSSpeccy(jssSpeccyRef, "/games/helloworld.tap");
-
   return (
-    <>
-      <div id="jsspeccy" ref={jssSpeccyRef}></div>
-    </>
+    <ChakraProvider>
+      <Home />
+    </ChakraProvider>
   );
 }
 
