@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# create a dist folder if one doesnt exist already
-mkdir -p dist
-
 # build the tapes
-./libs/zxbasic/zxbc.py ./games/helloworld.bas -o ./dist/helloworld.tap --tap --BASIC --autorun
+for file in games/*.bas; do
+  ./libs/zxbasic/zxbc.py "$file" -o "./public/games/$(basename "$file" .bas).tap" --tap --BASIC --autorun
+done
+

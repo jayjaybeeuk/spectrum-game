@@ -1,34 +1,15 @@
-import { useEffect } from "react";
+import { useRef } from "react";
+import useLoadJSSpeccy from "./hooks/useLoadJSSpeccy";
 import "./App.css";
 
-declare const JSSpeccy: any;
-
 function App() {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "/jsspeccy/jsspeccy.js";
-    script.async = true;
-    script.onload = () => scriptLoaded();
+  const jssSpeccyRef = useRef<HTMLDivElement>(null);
 
-    document.body.appendChild(script);
-  }, []);
-
-  const scriptLoaded = () => {
-    console.log("script loaded");
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    JSSpeccy(document.getElementById("jsspeccy"), {
-      zoom: 2,
-      sandbox: false,
-      autoStart: true,
-      autoLoadTapes: true,
-      openUrl: "https://spectrum-game-eight.vercel.app/helloworld.tap",
-    });
-  };
+  useLoadJSSpeccy(jssSpeccyRef, "/games/helloworld.tap");
 
   return (
     <>
-      <div id="jsspeccy"></div>
+      <div id="jsspeccy" ref={jssSpeccyRef}></div>
     </>
   );
 }
