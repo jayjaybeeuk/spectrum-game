@@ -1,8 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState, ChangeEvent } from "react";
 import { Dropdown } from "../../components/dropdown";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
-
-import { useState } from "react";
 
 const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
@@ -10,7 +8,7 @@ const Home = () => {
 
   useLoadJSSpeccy(jssSpeccyRef, `/games/${selectedOption}`);
 
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleOptionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
   };
 
