@@ -14,6 +14,7 @@
     "preview": "vite preview",
     "build:site": "tsc && vite build",
     "build:games": "./scripts/build.sh",
+    "build:games:win": "./scripts/build.bat",
     "build": "npm run build:games && npm run build:site"
   },
   "dependencies": {
