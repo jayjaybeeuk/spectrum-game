@@ -21,11 +21,11 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
     [ref]
   );
 
-  const loadUrl = useCallback((openUrl: string) => {
-    console.log("url loaded");
+  // const loadUrl = useCallback((openUrl: string) => {
+  //   console.log("url loaded");
 
-    emu.openUrl(openUrl);
-  }, []);
+  //   emu.openUrl(openUrl);
+  // }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
