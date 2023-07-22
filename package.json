@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "build:site": "tsc && vite build",
     "build:games": "./scripts/build.sh",
-    "build": "npm run build:site && npm run build:games"
+    "build": "npm run build:games && npm run build:site"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.7.1",
