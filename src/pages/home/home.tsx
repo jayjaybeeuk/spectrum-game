@@ -17,6 +17,7 @@ const Home = () => {
       <Dropdown handleChange={handleOptionChange} value={selectedOption}>
         <option value="helloworld.tap">Hello World</option>
         <option value="breakout.tap">Breakout</option>
+        <option value="snake.tap">Snake</option>
       </Dropdown>
       <div id="jsspeccy" ref={jssSpeccyRef}></div>
     </>
