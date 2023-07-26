@@ -15,17 +15,18 @@
   40 REM ********************************************************************
 
   50 BORDER 7 : PAPER 7 : INK 0 : CLS
-  51 PRINT AT 3,13 ; PAPER 1 ; INK 7 ; "ZXSnake"
-  52 PRINT AT 5,9 ; PAPER 7 ; INK 0 ; "Q - Up"
-  53 PRINT AT 6,9 ; PAPER 7 ; INK 0 ; "A - Down"
-  54 PRINT AT 7,9 ; PAPER 7 ; INK 0 ; "O - Left"
-  55 PRINT AT 8,9 ; PAPER 7 ; INK 0 ; "P - Right"
-  56 PRINT AT 10,3 ; PAPER 7 ; INK 0 ; "You have to pick up every"
-  57 PRINT AT 11,3 ; PAPER 7 ; INK 0 ; "fruit on the screen while"
-  58 PRINT AT 12,3 ; PAPER 7 ; INK 0 ; "growing up more and more..."
-  59 PRINT AT 15,3 ; PAPER 7 ; INK 0 ; "Press any key to start"
-  60 LET j$ = INKEY$
-  61 IF j$ = "" THEN GOTO 60: END IF
+  51 PRINT AT 3,13 ; PAPER 1 ; INK 7 ; "Snake"
+  52 PRINT AT 4,3 ; PAPER 1 ; INK 7 ; "Reprogrammed by James Bolton"
+  53 PRINT AT 6,9 ; PAPER 7 ; INK 0 ; "Q - Up"
+  54 PRINT AT 7,9 ; PAPER 7 ; INK 0 ; "A - Down"
+  55 PRINT AT 8,9 ; PAPER 7 ; INK 0 ; "O - Left"
+  56 PRINT AT 9,9 ; PAPER 7 ; INK 0 ; "P - Right"
+  57 PRINT AT 11,3 ; PAPER 7 ; INK 0 ; "You have to pick up every"
+  58 PRINT AT 12,3 ; PAPER 7 ; INK 0 ; "fruit on the screen while"
+  59 PRINT AT 13,3 ; PAPER 7 ; INK 0 ; "growing up more and more..."
+  60 PRINT AT 15,3 ; PAPER 7 ; INK 0 ; "Press any key to start"
+  61 LET j$ = INKEY$
+  62 IF j$ = "" THEN GOTO 61: END IF
 
   70 REM UDG
   71 DIM udg(1, 7) AS uByte => { {60, 66, 129, 129, 129, 129, 66, 60}, {24, 60, 60, 60, 126, 251, 247, 126}}
