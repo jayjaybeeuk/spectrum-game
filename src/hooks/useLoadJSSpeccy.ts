@@ -1,9 +1,14 @@
-import { RefObject, useEffect, useCallback, useRef } from "react";
+import { RefObject, useEffect, useCallback, useRef, useState } from "react";
 
 declare const JSSpeccy: any;
 
+interface Emulator {
+  openUrl: (url: string) => void;
+}
+
 const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
-  const emu = useRef<any>(null);
+  const emu = useRef<Emulator | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const scriptLoaded = useCallback(
     (openUrl: string) => {
@@ -21,24 +26,27 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
     [ref]
   );
 
-  // const loadUrl = useCallback((openUrl: string) => {
-  //   console.log("url loaded");
+  const loadUrl = useCallback((openUrl: string) => {
+    console.log("url loaded");
 
-  //   emu.openUrl(openUrl);
-  // }, []);
+    if (emu.current) {
+      emu.current.openUrl(openUrl);
+    }
+  }, []);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "/jsspeccy/jsspeccy.js";
-    script.async = true;
-    script.onload = () => scriptLoaded(openUrl);
+    if (loaded) {
+      loadUrl(openUrl);
+    } else {
+      const script = document.createElement("script");
+      script.src = "/jsspeccy/jsspeccy.js";
+      script.async = true;
+      script.onload = () => scriptLoaded(openUrl);
 
-    document.body.appendChild(script);
-  }, [openUrl, scriptLoaded]);
-
-  // useEffect(() => {
-  //   loadUrl(openUrl);
-  // }, [loadUrl, openUrl]);
+      document.body.appendChild(script);
+      setLoaded(true);
+    }
+  }, [loaded, openUrl, scriptLoaded, loadUrl]);
 
   return ref;
 };
