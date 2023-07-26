@@ -1,52 +1,61 @@
 import { RefObject, useEffect, useCallback, useRef, useState } from "react";
 
-declare const JSSpeccy: any;
-
 interface Emulator {
   openUrl: (url: string) => void;
 }
+
+interface JSSpeccyType {
+  (
+    element: HTMLElement,
+    options: {
+      zoom: number;
+      sandbox: boolean;
+      autoStart: boolean;
+      autoLoadTapes: boolean;
+      openUrl: string;
+    }
+  ): Emulator;
+}
+
+declare const JSSpeccy: JSSpeccyType;
 
 const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
   const emu = useRef<Emulator | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  const scriptLoaded = useCallback(
-    (openUrl: string) => {
-      console.log("script loaded");
+  const scriptLoaded = useCallback(() => {
+    console.log("script loaded");
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-      emu.current = JSSpeccy(ref.current, {
-        zoom: 2,
-        sandbox: false,
-        autoStart: true,
-        autoLoadTapes: true,
-        openUrl,
-      });
-    },
-    [ref]
-  );
+    emu.current = JSSpeccy(ref.current!, {
+      zoom: 2,
+      sandbox: false,
+      autoStart: true,
+      autoLoadTapes: true,
+      openUrl,
+    });
+  }, [ref, openUrl]);
 
-  const loadUrl = useCallback((openUrl: string) => {
+  const loadUrl = useCallback(() => {
     console.log("url loaded");
 
     if (emu.current) {
       emu.current.openUrl(openUrl);
     }
-  }, []);
+  }, [openUrl]);
 
   useEffect(() => {
     if (loaded) {
-      loadUrl(openUrl);
+      loadUrl();
     } else {
       const script = document.createElement("script");
       script.src = "/jsspeccy/jsspeccy.js";
       script.async = true;
-      script.onload = () => scriptLoaded(openUrl);
+      script.onload = scriptLoaded;
 
       document.body.appendChild(script);
       setLoaded(true);
     }
-  }, [loaded, openUrl, scriptLoaded, loadUrl]);
+  }, [loaded, loadUrl, scriptLoaded]);
 
   return ref;
 };
