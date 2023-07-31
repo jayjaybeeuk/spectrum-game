@@ -1,5 +1,5 @@
 import { useRef, useState, ChangeEvent } from "react";
-import { Dropdown } from "../../components/dropdown";
+import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 
 const Home = () => {
@@ -20,6 +20,26 @@ const Home = () => {
         <option value="snake.tap">Snake</option>
       </Dropdown>
       <div id="jsspeccy" ref={jssSpeccyRef}></div>
+
+      {selectedOption && (
+        <div>
+          <div>
+            You can download and play this game on an emulator via this tap
+            file:
+          </div>
+          <DownloadLink tapFile={`/games/${selectedOption}`} />
+          <div>
+            To see all of the games available,{" "}
+            <a
+              target="_blank"
+              href="https://github.com/jayjaybeeuk/spectrum-game"
+            >
+              go to my GitHub page
+            </a>
+            .
+          </div>
+        </div>
+      )}
     </>
   );
 };
