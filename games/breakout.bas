@@ -1,12 +1,15 @@
 #include <screen.bas>
 10 REM ************ZX CODE CLUB************
+14 REM *                                  *
 15 REM *    BREAKOUT by J Bolton 2023     *
+16 REM *              v0.1                *
+17 REM *                                  *
 20 REM ************************************
 25 GO SUB 7000 
 30 INK 1: PAPER 7: BORDER 4: CLS 
 35 LET lives=3 
 45 REM ******* Initialising variables 
-50 PRINT AT 2,12; INK 7; BRIGHT 1; PAPER 2;"BREAKOUT"; BRIGHT 0; PAPER 7; INK 1;AT 6,0;"Taken from..";AT 8,0;"ZX Spectrum Games Code Club";AT 10,0;"Reprogrammed by";AT 12,0;"James Bolton": PAUSE 0 
+50 PRINT AT 2,12; INK 7; BRIGHT 1; PAPER 2;"BREAKOUT"; BRIGHT 0; PAPER 7; INK 1;AT 6,10;"Taken from..";AT 8,2;"ZX Spectrum Games Code Club";AT 10,8;"Reprogrammed by";AT 12,9;"James Bolton";AT 14,10;"Version 0.2": PAUSE 0 
 100 GO SUB 300: REM initialise 
 120 GO SUB 500: REM menu 
 130 GO SUB 1000: REM main loop for game 
@@ -34,6 +37,7 @@
 1060 IF timer=5 THEN GO SUB 3000 
 1070 IF ball=1 THEN GO SUB 4000 
 1080 PRINT AT 0,2;"SCORE:";score,"(Lvl:";lvl;") Lives:";lives:
+1090 PAUSE 5
 2000 GO TO 1010 
 3000 REM draw blocks
 3010 FOR n = 1 TO 20 STEP 2 

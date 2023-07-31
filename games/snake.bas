@@ -1,21 +1,12 @@
-1 REM ********************************************************************
-   2 REM ZXSnake by Federico J. Alvarez Valero (2003-02-05)
-  10 REM This program is free software; you can redistribute it and/or modify
-  11 REM it under the terms of the GNU General Public License as published by
-  12 REM the Free Software Foundation; either version 2 of the License, or
-  13 REM (at your option) any later version.
-  14 REM This program is distributed in the hope that it will be useful,
-  15 REM but WITHOUT ANY WARRANTY; without even the implied warranty of
-  16 REM MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  17 REM GNU General Public License for more details.
-  18 REM You should have received a copy of the GNU General Public License
-  19 REM along with this program; if not, write to the Free Software
-  20 REM Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  30 REM                   ENGLISH VERSION
-  40 REM ********************************************************************
+  10 REM ************ZX CODE CLUB************
+  14 REM *                                  *
+  15 REM *      SNAKE by J Bolton 2023      *
+  16 REM *              v0.1                *
+  17 REM *                                  *
+  20 REM ************************************
 
   50 BORDER 7 : PAPER 7 : INK 0 : CLS
-  51 PRINT AT 3,13 ; PAPER 1 ; INK 7 ; "Snake"
+  51 PRINT AT 3,13 ; PAPER 1 ; INK 7 ; "Snake v0.1"
   52 PRINT AT 4,3 ; PAPER 1 ; INK 7 ; "Reprogrammed by James Bolton"
   53 PRINT AT 6,9 ; PAPER 7 ; INK 0 ; "Q - Up"
   54 PRINT AT 7,9 ; PAPER 7 ; INK 0 ; "A - Down"
@@ -75,6 +66,9 @@
 1080 LET p(f+1,minx+1) = 4
 1090 LET p(f+1,maxx+1) = 4
 1100 NEXT f
+1110 REM Draw the score
+1120 PRINT AT 21,10 ; PAPER 1 ; INK 7 ; score
+
 
 1500 GOSUB 8000 : REM Place first fruit
 
@@ -126,10 +120,11 @@
 3250 IF orientationy > -1 AND (a$ = "A" OR a$ = "a") THEN
 3251 LET orientationx = 0 : LET orientationy = 1: END IF
 
-3500 REM Pausa / Delay
+3500 REM Pause / Delay
 3505 BEEP 0.005, 0
 3510 FOR i = 1 TO 500:
 3511 NEXT i
+3512 PAUSE 5
 
 7998 GOTO 3000
 
