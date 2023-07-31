@@ -9,7 +9,7 @@
 30 INK 1: PAPER 7: BORDER 4: CLS 
 35 LET lives=3 
 45 REM ******* Initialising variables 
-50 PRINT AT 2,12; INK 7; BRIGHT 1; PAPER 2;"BREAKOUT"; BRIGHT 0; PAPER 7; INK 1;AT 6,10;"Taken from..";AT 8,2;"ZX Spectrum Games Code Club";AT 10,8;"Reprogrammed by";AT 12,9;"James Bolton";AT 14,10;"Version 0.2": PAUSE 0 
+50 PRINT AT 2,12; INK 7; BRIGHT 1; PAPER 2;"BREAKOUT"; BRIGHT 0; PAPER 7; INK 1;AT 6,10;"Taken from..";AT 8,2;"ZX Spectrum Games Code Club";AT 10,8;"Reprogrammed by";AT 12,9;"James Bolton";AT 14,10;"Version 0.1": PAUSE 0 
 100 GO SUB 300: REM initialise 
 120 GO SUB 500: REM menu 
 130 GO SUB 1000: REM main loop for game 

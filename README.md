@@ -10,6 +10,10 @@ To and run the games, simple run `yarn dev` to run the compile the games, boot i
 
 If you just want to compile the games for use on an emulator, you can just run `yarn build` for Mac and Linus, or `yarn build:win` for windows platforms.
 
+## ZX Basic and JSSpectrum Licenses
+
+Please note that ZX Basic and JSSpectrum have their own licenses, which you should review before using them to create or run Spectrum Basic games. You can find the licenses for ZX Basic at [Boriel's github page](https://github.com/boriel/zxbasic) and JSSpectrum in their respective repositories.
+
 ## Contributing
 
 If you would like to contribute to this repository, please fork the project and submit a pull request with your changes.
