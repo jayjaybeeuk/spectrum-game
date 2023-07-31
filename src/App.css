@@ -46,3 +46,8 @@ body {
 .read-the-docs {
   color: #888;
 }
+
+a {
+  color: #222222 !important;
+  text-decoration: underline !important;
+}
