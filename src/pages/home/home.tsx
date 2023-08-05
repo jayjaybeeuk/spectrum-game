@@ -19,8 +19,12 @@ const Home = () => {
         <option value="breakout.tap">Breakout</option>
         <option value="snake.tap">Snake</option>
         <option value="1-helloworld-zx-basic-playground.tap">
-          Hello World Playground
+          Test - Hello World Playground
         </option>
+        <option value="2-graphics-bank-switching.tap">
+          Test - Graphics Bank Switching
+        </option>
+        <option value="2-loop-function.tap">Test - Loop function</option>
       </Dropdown>
       <div id="jsspeccy" ref={jssSpeccyRef}></div>
 
