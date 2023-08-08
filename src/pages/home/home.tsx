@@ -24,7 +24,7 @@ const Home = () => {
         <option value="2-graphics-bank-switching.tap">
           Test - Graphics Bank Switching
         </option>
-        <option value="2-loop-function.tap">Test - Loop function</option>
+        <option value="3-loop-function.tap">Test - Loop function</option>
       </Dropdown>
       <div id="jsspeccy" ref={jssSpeccyRef}></div>
 
