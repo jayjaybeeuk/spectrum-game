@@ -14,7 +14,7 @@
 120 GO SUB 500: REM menu 
 130 GO SUB 1000: REM main loop for game 
 200 GO TO 30 
-300 LET ply=2: LET win=0: DIM a(9,2): DIM d(30): LET lvl=1: LET posy=30: LET x=10: LET timer=0: LET score=0: LET time=0: LET mov=11: LET pos=11: LET vx=0: LET vy=0: LET speed=1: LET ball=0: LET bx=0: LET by=0: LET score2=0: LET dif=5
+300 LET ply=2: LET win=0: DIM a(9,2): DIM d(30): LET lvl=1: LET posy=30: LET x=10: LET timer=0: LET score=0: LET time=0: LET mov=11: LET pos=11: LET vx=0: LET vy=0: LET speed=1: LET ball=0: LET bx=0: LET by=0: LET score2=0: LET origdif=5: LET dif=origdif
 310 LET b$=" "+CHR$(147)+CHR$(145)+" " : LET w$=CHR$(146)+CHR$(146)
 400 RETURN 
 500 CLS 
@@ -37,6 +37,7 @@
 1060 IF timer=5 THEN GO SUB 3000 
 1070 IF ball=1 THEN GO SUB 4000 
 1080 PRINT AT 0,2;"SCORE:";score,"(Lvl:";lvl;") Lives:";lives:
+1081 PRINT AT 1,10;"Difficulty:";dif;"": REM temp dif debug
 1090 PAUSE dif
 2000 GO TO 1010 
 3000 REM draw blocks
@@ -70,7 +71,7 @@
 5110 IF INKEY$="" THEN GO TO 5110
 5120 GO TO 30 
 6000 REM ***** NEXT LEVEL 
-6005 LET lvl=lvl+1: CLS : PRINT AT 10,10; FLASH 1;" L E V E L";lvl
+6005 LET lvl=lvl+1: dif=origdif-lvl: CLS : PRINT AT 10,10; FLASH 1;" L E V E L";lvl
 6010 BEEP 1,13 
 6020 LET timer=2 
 6050 FOR n=1 TO 100 
