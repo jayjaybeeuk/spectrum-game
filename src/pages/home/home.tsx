@@ -25,6 +25,7 @@ const Home = () => {
           Test - Graphics Bank Switching
         </option>
         <option value="3-loop-function.tap">Test - Loop function</option>
+        <option value="4-circle-plot.tap">Test - Circle plot</option>
       </Dropdown>
       <div id="jsspeccy" ref={jssSpeccyRef}></div>
 
