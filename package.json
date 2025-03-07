@@ -14,6 +14,7 @@
     "preview": "vite preview",
     "build:site": "tsc && vite build",
     "build:games": "./scripts/build.sh",
+    "build:games:platformer": "./scripts/build.sh 5-basic-platform-logic",
     "build:games:win": "./scripts/build.bat",
     "build": "npm run build:games && npm run build:site"
   },
@@ -36,6 +37,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
     "typescript": "^5.0.2",
-    "vite": "^4.4.0"
+    "vite": "^6.2.1"
   }
 }
