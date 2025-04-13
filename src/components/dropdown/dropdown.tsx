@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Select } from "@chakra-ui/react";
 
 interface DropdownProps {

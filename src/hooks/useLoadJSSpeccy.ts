@@ -1,11 +1,10 @@
-import { RefObject, useEffect, useCallback, useRef, useState } from "react";
+import { type RefObject, useEffect, useCallback, useRef, useState } from "react";
 
 interface Emulator {
   openUrl: (url: string) => void;
 }
 
-interface JSSpeccyType {
-  (
+type JSSpeccyType = (
     element: HTMLElement,
     options: {
       zoom: number;
@@ -13,9 +12,7 @@ interface JSSpeccyType {
       autoStart: boolean;
       autoLoadTapes: boolean;
       openUrl: string;
-    }
-  ): Emulator;
-}
+    }) => Emulator
 
 declare const JSSpeccy: JSSpeccyType;
 
@@ -26,13 +23,17 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
   const scriptLoaded = useCallback(() => {
     console.log("script loaded");
 
-    emu.current = JSSpeccy(ref.current!, {
-      zoom: 2,
-      sandbox: false,
-      autoStart: true,
-      autoLoadTapes: true,
-      openUrl,
-    });
+    if (ref.current) {
+      emu.current = JSSpeccy(ref.current, {
+        zoom: 2,
+        sandbox: false,
+        autoStart: true,
+        autoLoadTapes: true,
+        openUrl,
+      });
+    } else {
+      console.error("ref.current is null");
+    }
   }, [ref, openUrl]);
 
   const loadUrl = useCallback(() => {

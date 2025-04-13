@@ -1,4 +1,4 @@
-import { useRef, useState, ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 
@@ -28,7 +28,7 @@ const Home = () => {
         <option value="4-circle-plot.tap">Test - Circle plot</option>
         <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
       </Dropdown>
-      <div id="jsspeccy" ref={jssSpeccyRef}></div>
+      <div id="jsspeccy" ref={jssSpeccyRef} />
 
       {selectedOption && (
         <div>
@@ -41,7 +41,7 @@ const Home = () => {
             To see all of the games available,{" "}
             <a
               target="_blank"
-              href="https://github.com/jayjaybeeuk/spectrum-game"
+              href="https://github.com/jayjaybeeuk/spectrum-game" rel="noreferrer"
             >
               go to my GitHub page
             </a>
