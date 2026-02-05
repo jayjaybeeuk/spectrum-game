@@ -121,10 +121,17 @@ yarn preview
 
 ## Working with Games
 
+### Creating New ZX Basic Games
+
+**IMPORTANT**: When writing new ZX Basic games, you MUST:
+
+1. **Reference the official documentation** at https://zxbasic.readthedocs.io/en/docs/ to ensure correct syntax and language features
+2. **Verify the code compiles** by running `yarn build:games` before committing - this will catch syntax errors and issues with the ZX Basic code
+
 ### Adding a New Game
 
 1. Create a `.bas` file in `/games/` directory
-2. Run `yarn build:games` to compile to TAP format
+2. Run `yarn build:games` to compile to TAP format and verify code is valid
 3. Add game option to the dropdown in `src/pages/home/home.tsx`:
    ```tsx
    <option value="newgame.tap">Game Name</option>
@@ -187,6 +194,7 @@ Run single game compilation with verbose output:
 
 ## External Resources
 
-- [Boriel's ZX Basic](https://github.com/boriel/zxbasic) - Compiler documentation
+- [ZX Basic Documentation](https://zxbasic.readthedocs.io/en/docs/) - Official language reference (MUST read when writing games)
+- [Boriel's ZX Basic GitHub](https://github.com/boriel/zxbasic) - Compiler source and issues
 - [JSSpeccy](https://github.com/gasman/jsspeccy3) - Emulator documentation
 - [Chakra UI](https://chakra-ui.com/docs) - Component library docs
