@@ -18,6 +18,7 @@ const Home = () => {
         <option value="helloworld.tap">Hello World</option>
         <option value="breakout.tap">Breakout</option>
         <option value="snake.tap">Snake</option>
+        <option value="northampton-adventure.tap">Northampton Adventure</option>
         <option value="1-helloworld-zx-basic-playground.tap">
           Test - Hello World Playground
         </option>
