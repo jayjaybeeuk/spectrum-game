@@ -18,7 +18,9 @@ REM ---- Title Screen ----
 85 PRINT AT 14,2; " GO EAST,  GO WEST"
 87 PRINT AT 15,2; " Or just: N, S, E, W"
 88 PRINT AT 16,2; " LOOK - look around"
-89 PRINT AT 17,2; " QUIT - end game"
+89 PRINT AT 17,2; " TALK TO MAN - interact"
+91 PRINT AT 18,2; " OPEN BAG - check items"
+92 PRINT AT 19,2; " QUIT - end game"
 90 PRINT AT 20,2; "Press any key to begin..."
 95 PAUSE 0
 
@@ -28,8 +30,11 @@ REM ---- Initialise ----
 102 DIM cmd$ AS STRING
 103 DIM msg$ AS STRING
 104 DIM exits$ AS STRING
-105 LET room = 1
-106 LET msg$ = ""
+105 DIM hasHotdog AS UBYTE
+106 DIM answer$ AS STRING
+107 LET room = 1
+108 LET hasHotdog = 0
+109 LET msg$ = ""
 
 REM ---- Main Loop ----
 200 CLS
@@ -50,6 +55,8 @@ REM ---- Parse Commands ----
 340 IF cmd$ = "look" OR cmd$ = "LOOK" OR cmd$ = "l" OR cmd$ = "L" THEN GOTO 200: END IF
 350 IF cmd$ = "quit" OR cmd$ = "QUIT" OR cmd$ = "q" OR cmd$ = "Q" THEN GOTO 9000: END IF
 360 IF cmd$ = "help" OR cmd$ = "HELP" OR cmd$ = "h" OR cmd$ = "H" THEN GOTO 9100: END IF
+365 IF cmd$ = "talk to man" OR cmd$ = "TALK TO MAN" OR cmd$ = "talk" OR cmd$ = "TALK" THEN GOTO 600: END IF
+367 IF cmd$ = "open bag" OR cmd$ = "OPEN BAG" OR cmd$ = "look in bag" OR cmd$ = "LOOK IN BAG" OR cmd$ = "bag" OR cmd$ = "BAG" OR cmd$ = "inventory" OR cmd$ = "INVENTORY" OR cmd$ = "i" OR cmd$ = "I" THEN GOTO 700: END IF
 370 LET msg$ = "I don't understand that."
 380 GOTO 200
 
@@ -62,6 +69,40 @@ REM ---- Movement ----
 525 LET room = e : GOTO 200
 530 IF w = 0 THEN LET msg$ = "You can't go west." : GOTO 200: END IF
 535 LET room = w : GOTO 200
+
+REM ---- Talk to Man ----
+600 IF room <> 2 THEN LET msg$ = "There is nobody here to talk to." : GOTO 200: END IF
+605 IF hasHotdog = 1 THEN LET msg$ = "The man says: Enjoy your hotdog!" : GOTO 200: END IF
+610 CLS
+615 PRINT INK 6; "HOTDOG SELLER"
+620 PRINT ""
+625 PRINT "The man smiles and says:"
+630 PRINT ""
+635 PRINT INK 3; """Fancy a hotdog, mate?"
+640 PRINT INK 3; " Only the best in"
+645 PRINT INK 3; " Northampton!"""
+650 PRINT ""
+655 PRINT "Do you want to buy a hotdog?"
+660 PRINT INK 4; "(YES or NO) ";
+665 LET answer$ = INPUT(10)
+670 IF answer$ = "yes" OR answer$ = "YES" OR answer$ = "y" OR answer$ = "Y" THEN GOTO 680: END IF
+675 LET msg$ = "Maybe next time! says the man." : GOTO 200
+680 LET hasHotdog = 1
+685 LET msg$ = "You buy a hotdog and put it in your bag."
+690 GOTO 200
+
+REM ---- Open Bag / Look in Bag ----
+700 CLS
+705 PRINT INK 6; "YOUR BAG"
+710 PRINT ""
+715 IF hasHotdog = 0 THEN PRINT "Your bag is empty." : GOTO 740: END IF
+720 PRINT "Your bag contains:"
+725 PRINT ""
+730 IF hasHotdog = 1 THEN PRINT " - A hotdog": END IF
+740 PRINT ""
+745 PRINT "Press any key..."
+750 PAUSE 0
+755 GOTO 200
 
 REM ---- Room Descriptions ----
 1000 REM Display current room
@@ -96,8 +137,11 @@ REM Room 2: Market Square (North)
 1225 PRINT "with life. Traders call out"
 1230 PRINT "their wares from colourful"
 1235 PRINT "stalls. The smell of fresh"
-1240 PRINT "bread fills the air. A stone"
-1245 PRINT "fountain splashes gently in"
+1240 PRINT "bread fills the air. A man"
+1245 PRINT "stands by a cart selling"
+1246 PRINT "hotdogs, the sizzling smell"
+1247 PRINT "drifts towards you. A stone"
+1248 PRINT "fountain splashes gently in"
 1250 PRINT "the centre of the square."
 1255 PRINT "All Saints Church lies to"
 1260 PRINT "the south."
@@ -180,6 +224,8 @@ REM ---- Help Screen ----
 9140 PRINT " GO EAST   (or E)"
 9145 PRINT " GO WEST   (or W)"
 9150 PRINT " LOOK      (or L)"
+9152 PRINT " TALK TO MAN"
+9154 PRINT " OPEN BAG  (or I)"
 9155 PRINT " HELP      (or H)"
 9160 PRINT " QUIT      (or Q)"
 9170 PRINT ""
