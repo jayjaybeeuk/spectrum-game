@@ -16,7 +16,8 @@
     "build:games": "./scripts/build.sh",
     "build:games:platformer": "./scripts/build.sh 5-basic-platform-logic",
     "build:games:win": "./scripts/build.bat",
-    "build": "npm run build:games && npm run build:site"
+    "build": "npm run build:games && npm run build:site",
+    "remove:nonsnap": "./scripts/remove-non-tap-sna.sh"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.7.1",
