@@ -6,10 +6,19 @@ const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState("helloworld.tap");
 
-  useLoadJSSpeccy(jssSpeccyRef, `/games/${selectedOption}`);
+  const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
+    jssSpeccyRef,
+    `/games/${selectedOption}`
+  );
 
   const handleOptionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
+  };
+
+  const handleStartOverlayActivate = () => {
+    if (isScriptLoaded) {
+      startEmulator();
+    }
   };
 
   return (
@@ -29,7 +38,54 @@ const Home = () => {
         <option value="4-circle-plot.tap">Test - Circle plot</option>
         <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
       </Dropdown>
-      <div id="jsspeccy" ref={jssSpeccyRef} />
+      <div
+        style={{
+          position: "relative",
+          display: "inline-block",
+          minHeight: "384px",
+          minWidth: "512px",
+          marginTop: "1rem",
+          backgroundColor: "#000"
+        }}
+      >
+        {!isStarted && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handleStartOverlayActivate}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleStartOverlayActivate();
+              }
+            }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: "0.5rem",
+              padding: "1rem",
+              backgroundColor: "rgba(0, 0, 0, 0.82)",
+              color: "#f7fafc",
+              cursor: isScriptLoaded ? "pointer" : "wait",
+              zIndex: 1
+            }}
+          >
+            <strong>
+              {isScriptLoaded ? "Click to start emulator with sound" : "Loading emulator..."}
+            </strong>
+            <div>
+              {isScriptLoaded
+                ? "Audio unlocks after your first interaction."
+                : "The emulator script is still loading."}
+            </div>
+          </div>
+        )}
+        <div id="jsspeccy" ref={jssSpeccyRef} />
+      </div>
 
       {selectedOption && (
         <div>

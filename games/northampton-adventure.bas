@@ -74,13 +74,18 @@ REM ---- Parse Commands ----
 
 REM ---- Movement ----
 500 IF n = 0 THEN LET msg$ = "You can't go north." : GOTO 200: END IF
-505 LET room = n : GOTO 200
+505 LET room = n : GOSUB 800 : GOTO 200
 510 IF s = 0 THEN LET msg$ = "You can't go south." : GOTO 200: END IF
-515 LET room = s : GOTO 200
+515 LET room = s : GOSUB 800 : GOTO 200
 520 IF e = 0 THEN LET msg$ = "You can't go east." : GOTO 200: END IF
-525 LET room = e : GOTO 200
+525 LET room = e : GOSUB 800 : GOTO 200
 530 IF w = 0 THEN LET msg$ = "You can't go west." : GOTO 200: END IF
-535 LET room = w : GOTO 200
+535 LET room = w : GOSUB 800 : GOTO 200
+
+REM ---- Movement Sound ----
+800 BEEP 0.03, 10
+810 BEEP 0.03, 14
+820 RETURN
 
 REM ---- Talk to Man ----
 600 IF room <> 2 THEN LET msg$ = "There is nobody here to talk to." : GOTO 200: END IF
