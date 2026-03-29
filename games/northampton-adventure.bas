@@ -2,7 +2,7 @@
 
 10 REM ************ZX CODE CLUB************
 14 REM *                                  *
-15 REM *   NORTHAMPTON ADVENTURE v0.1     *
+15 REM *   NORTHAMPTON ADVENTURE v0.2     *
 16 REM *     by James Bolton 2024         *
 17 REM *                                  *
 20 REM ************************************
@@ -18,7 +18,7 @@ REM ---- Title Screen ----
 85 PRINT AT 14,2; " GO EAST,  GO WEST"
 87 PRINT AT 15,2; " Or just: N, S, E, W"
 88 PRINT AT 16,2; " LOOK - look around"
-89 PRINT AT 17,2; " TALK TO MAN - interact"
+89 PRINT AT 17,2; " TALK - interact"
 91 PRINT AT 18,2; " OPEN BAG - check items"
 92 PRINT AT 19,2; " QUIT - end game"
 90 PRINT AT 20,2; "Press any key to begin..."
@@ -112,6 +112,12 @@ REM ---- Room Descriptions ----
 1030 IF room = 3 THEN GOTO 1300: END IF
 1040 IF room = 4 THEN GOTO 1400: END IF
 1050 IF room = 5 THEN GOTO 1500: END IF
+1060 IF room = 6 THEN GOTO 1600: END IF
+1070 IF room = 7 THEN GOTO 1700: END IF
+1080 IF room = 8 THEN GOTO 1800: END IF
+1090 IF room = 9 THEN GOTO 1900: END IF
+1092 IF room = 10 THEN GOTO 1940: END IF
+1094 IF room = 11 THEN GOTO 1970: END IF
 
 REM Room 1: All Saints Church (Centre)
 1100 LET n = 2 : LET s = 3 : LET e = 4 : LET w = 5
@@ -130,7 +136,7 @@ REM Room 1: All Saints Church (Centre)
 1170 RETURN
 
 REM Room 2: Market Square (North)
-1200 LET s = 1
+1200 LET s = 1 : LET e = 6 : LET w = 8
 1210 PRINT INK 6; "MARKET SQUARE"
 1215 PRINT ""
 1220 PRINT "The old Market Square bustles"
@@ -144,12 +150,14 @@ REM Room 2: Market Square (North)
 1248 PRINT "fountain splashes gently in"
 1250 PRINT "the centre of the square."
 1255 PRINT "All Saints Church lies to"
-1260 PRINT "the south."
+1260 PRINT "the south. Market Walk is"
+1262 PRINT "to the east and the"
+1264 PRINT "Guildhall rises to the west."
 1265 GOSUB 2000
 1270 RETURN
 
 REM Room 3: Becket's Park (South)
-1300 LET n = 1
+1300 LET n = 1 : LET s = 11
 1310 PRINT INK 6; "BECKET'S PARK"
 1315 PRINT ""
 1320 PRINT "You stroll through Becket's"
@@ -159,12 +167,14 @@ REM Room 3: Becket's Park (South)
 1340 PRINT "paddle in the shallows and"
 1345 PRINT "willow trees sway along the"
 1350 PRINT "banks. The path back to the"
-1355 PRINT "church leads north."
+1355 PRINT "church leads north while"
+1357 PRINT "the abbey grounds beckon"
+1359 PRINT "further south."
 1360 GOSUB 2000
 1365 RETURN
 
 REM Room 4: Abington Street (East)
-1400 LET w = 1
+1400 LET w = 1 : LET e = 9
 1410 PRINT INK 6; "ABINGTON STREET"
 1415 PRINT ""
 1420 PRINT "Abington Street stretches"
@@ -175,12 +185,13 @@ REM Room 4: Abington Street (East)
 1445 PRINT "street musician plays a"
 1450 PRINT "familiar tune nearby. The"
 1455 PRINT "way back to the church is"
-1460 PRINT "to the west."
+1460 PRINT "to the west. 78 Derngate"
+1462 PRINT "waits further east."
 1465 GOSUB 2000
 1470 RETURN
 
 REM Room 5: The Drapery (West)
-1500 LET e = 1
+1500 LET e = 1 : LET w = 10
 1510 PRINT INK 6; "THE DRAPERY"
 1515 PRINT ""
 1520 PRINT "You find yourself on The"
@@ -191,9 +202,100 @@ REM Room 5: The Drapery (West)
 1545 PRINT "of the oldest buildings in"
 1550 PRINT "town, stands nearby with its"
 1555 PRINT "dark timber frame. The church"
-1560 PRINT "lies back to the east."
+1560 PRINT "lies back to the east and"
+1562 PRINT "the museum is west."
 1565 GOSUB 2000
 1570 RETURN
+
+REM Room 6: Market Walk (East of Market Square)
+1600 LET w = 2 : LET e = 7
+1610 PRINT INK 6; "MARKET WALK"
+1615 PRINT ""
+1620 PRINT "A faded sign hangs above"
+1625 PRINT "the entrance to Market"
+1630 PRINT "Walk. The old arcade is"
+1635 PRINT "half-shuttered now, its"
+1640 PRINT "empty units reflecting"
+1645 PRINT "weak strip lights. Your"
+1650 PRINT "footsteps echo between"
+1655 PRINT "locked fronts. Market"
+1660 PRINT "Square is west and the"
+1665 PRINT "Grosvenor Centre lies east."
+1670 GOSUB 2000
+1675 RETURN
+
+REM Room 7: Grosvenor Centre (East of Market Walk)
+1700 LET w = 6
+1710 PRINT INK 6; "GROSVENOR CENTRE"
+1715 PRINT ""
+1720 PRINT "The Grosvenor Centre opens"
+1725 PRINT "around you in bright tiles"
+1730 PRINT "and glass. A few shoppers"
+1735 PRINT "drift past the chain stores"
+1740 PRINT "while escalators hum above."
+1745 PRINT "The busier part of town"
+1750 PRINT "feels close by, but Market"
+1755 PRINT "Walk lies back to the west."
+1760 GOSUB 2000
+1765 RETURN
+
+REM Room 8: Guildhall (West of Market Square)
+1800 LET e = 2
+1810 PRINT INK 6; "GUILDHALL"
+1815 PRINT ""
+1820 PRINT "The Gothic bulk of the"
+1825 PRINT "Guildhall watches over the"
+1830 PRINT "square, all stone carvings"
+1835 PRINT "and tall windows. Pigeons"
+1840 PRINT "patrol the steps and a"
+1845 PRINT "council notice flaps on"
+1850 PRINT "a board nearby. Market"
+1855 PRINT "Square is east."
+1860 GOSUB 2000
+1865 RETURN
+
+REM Room 9: 78 Derngate (East of Abington Street)
+1900 LET w = 4
+1910 PRINT INK 6; "78 DERNGATE"
+1915 PRINT ""
+1920 PRINT "Number 78 Derngate stands"
+1925 PRINT "out at once with its clean"
+1930 PRINT "Mackintosh lines and bold"
+1932 PRINT "geometric details. Even the"
+1934 PRINT "doorway feels like a design"
+1935 PRINT "statement. Abington Street"
+1936 PRINT "is back to the west."
+1938 GOSUB 2000
+1939 RETURN
+
+REM Room 10: Northampton Museum (West of The Drapery)
+1940 LET e = 5
+1942 PRINT INK 6; "NORTHAMPTON MUSEUM"
+1944 PRINT ""
+1946 PRINT "Inside Northampton Museum"
+1948 PRINT "the town's boot and shoe"
+1950 PRINT "history fills quiet cases."
+1952 PRINT "Polished leather gleams"
+1954 PRINT "beneath the lamps and old"
+1956 PRINT "factory photographs line"
+1958 PRINT "the walls. The Drapery is"
+1960 PRINT "back to the east."
+1962 GOSUB 2000
+1964 RETURN
+
+REM Room 11: Delapre Abbey (South of Becket's Park)
+1970 LET n = 3
+1972 PRINT INK 6; "DELAPRE ABBEY"
+1974 PRINT ""
+1976 PRINT "Beyond the park you reach"
+1978 PRINT "Delapre Abbey, where the"
+1980 PRINT "old house sits behind wide"
+1982 PRINT "lawns and ancient trees."
+1984 PRINT "The town feels far away"
+1986 PRINT "here. The path back through"
+1988 PRINT "Becket's Park is north."
+1990 GOSUB 2000
+1992 RETURN
 
 REM ---- Print Exits ----
 2000 PRINT ""
@@ -224,7 +326,7 @@ REM ---- Help Screen ----
 9140 PRINT " GO EAST   (or E)"
 9145 PRINT " GO WEST   (or W)"
 9150 PRINT " LOOK      (or L)"
-9152 PRINT " TALK TO MAN"
+9152 PRINT " TALK      (or TALK TO MAN)"
 9154 PRINT " OPEN BAG  (or I)"
 9155 PRINT " HELP      (or H)"
 9160 PRINT " QUIT      (or Q)"
