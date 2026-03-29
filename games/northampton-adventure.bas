@@ -32,9 +32,20 @@ REM ---- Initialise ----
 104 DIM exits$ AS STRING
 105 DIM hasHotdog AS UBYTE
 106 DIM answer$ AS STRING
-107 LET room = 1
-108 LET hasHotdog = 0
-109 LET msg$ = ""
+107 REM UDG A-K are location placeholders.
+108 REM Replace these byte rows later with ZXGraphics Boriel DIM export.
+109 DIM udg(10, 7) AS UBYTE
+110 DIM i, j AS UBYTE
+111 RESTORE 9500
+112 FOR i = 0 TO 10
+113   FOR j = 0 TO 7
+114     READ udg(i, j)
+115   NEXT j
+116 NEXT i
+117 POKE UINTEGER 23675, @udg(0, 0)
+118 LET room = 1
+119 LET hasHotdog = 0
+120 LET msg$ = ""
 
 REM ---- Main Loop ----
 200 CLS
@@ -122,6 +133,7 @@ REM ---- Room Descriptions ----
 REM Room 1: All Saints Church (Centre)
 1100 LET n = 2 : LET s = 3 : LET e = 4 : LET w = 5
 1110 PRINT INK 6; "ALL SAINTS CHURCH"
+1112 GOSUB 2500
 1115 PRINT ""
 1120 PRINT "You stand before the grand"
 1125 PRINT "portico of All Saints Church"
@@ -138,6 +150,7 @@ REM Room 1: All Saints Church (Centre)
 REM Room 2: Market Square (North)
 1200 LET s = 1 : LET e = 6 : LET w = 8
 1210 PRINT INK 6; "MARKET SQUARE"
+1212 GOSUB 2500
 1215 PRINT ""
 1220 PRINT "The old Market Square bustles"
 1225 PRINT "with life. Traders call out"
@@ -159,6 +172,7 @@ REM Room 2: Market Square (North)
 REM Room 3: Becket's Park (South)
 1300 LET n = 1 : LET s = 11
 1310 PRINT INK 6; "BECKET'S PARK"
+1312 GOSUB 2500
 1315 PRINT ""
 1320 PRINT "You stroll through Becket's"
 1325 PRINT "Park by the River Nene. The"
@@ -176,6 +190,7 @@ REM Room 3: Becket's Park (South)
 REM Room 4: Abington Street (East)
 1400 LET w = 1 : LET e = 9
 1410 PRINT INK 6; "ABINGTON STREET"
+1412 GOSUB 2500
 1415 PRINT ""
 1420 PRINT "Abington Street stretches"
 1425 PRINT "before you, the main"
@@ -193,6 +208,7 @@ REM Room 4: Abington Street (East)
 REM Room 5: The Drapery (West)
 1500 LET e = 1 : LET w = 10
 1510 PRINT INK 6; "THE DRAPERY"
+1512 GOSUB 2500
 1515 PRINT ""
 1520 PRINT "You find yourself on The"
 1525 PRINT "Drapery, a historic street"
@@ -210,6 +226,7 @@ REM Room 5: The Drapery (West)
 REM Room 6: Market Walk (East of Market Square)
 1600 LET w = 2 : LET e = 7
 1610 PRINT INK 6; "MARKET WALK"
+1612 GOSUB 2500
 1615 PRINT ""
 1620 PRINT "A faded sign hangs above"
 1625 PRINT "the entrance to Market"
@@ -227,6 +244,7 @@ REM Room 6: Market Walk (East of Market Square)
 REM Room 7: Grosvenor Centre (East of Market Walk)
 1700 LET w = 6
 1710 PRINT INK 6; "GROSVENOR CENTRE"
+1712 GOSUB 2500
 1715 PRINT ""
 1720 PRINT "The Grosvenor Centre opens"
 1725 PRINT "around you in bright tiles"
@@ -242,6 +260,7 @@ REM Room 7: Grosvenor Centre (East of Market Walk)
 REM Room 8: Guildhall (West of Market Square)
 1800 LET e = 2
 1810 PRINT INK 6; "GUILDHALL"
+1812 GOSUB 2500
 1815 PRINT ""
 1820 PRINT "The Gothic bulk of the"
 1825 PRINT "Guildhall watches over the"
@@ -257,6 +276,7 @@ REM Room 8: Guildhall (West of Market Square)
 REM Room 9: 78 Derngate (East of Abington Street)
 1900 LET w = 4
 1910 PRINT INK 6; "78 DERNGATE"
+1912 GOSUB 2500
 1915 PRINT ""
 1920 PRINT "Number 78 Derngate stands"
 1925 PRINT "out at once with its clean"
@@ -271,6 +291,7 @@ REM Room 9: 78 Derngate (East of Abington Street)
 REM Room 10: Northampton Museum (West of The Drapery)
 1940 LET e = 5
 1942 PRINT INK 6; "NORTHAMPTON MUSEUM"
+1943 GOSUB 2500
 1944 PRINT ""
 1946 PRINT "Inside Northampton Museum"
 1948 PRINT "the town's boot and shoe"
@@ -286,6 +307,7 @@ REM Room 10: Northampton Museum (West of The Drapery)
 REM Room 11: Delapre Abbey (South of Becket's Park)
 1970 LET n = 3
 1972 PRINT INK 6; "DELAPRE ABBEY"
+1973 GOSUB 2500
 1974 PRINT ""
 1976 PRINT "Beyond the park you reach"
 1978 PRINT "Delapre Abbey, where the"
@@ -306,6 +328,13 @@ REM ---- Print Exits ----
 2050 IF w > 0 THEN LET exits$ = exits$ + "W ": END IF
 2060 PRINT INK 5; exits$
 2070 RETURN
+
+REM ---- Draw Room Placeholder Graphic ----
+2500 REM UDG A-K map to room IDs 1-11.
+2510 PRINT AT 0,28; INK 4; CHR$(143 + room); CHR$(143 + room)
+2520 PRINT AT 1,28; INK 4; CHR$(143 + room); CHR$(143 + room)
+2530 PRINT AT 1,0;
+2540 RETURN
 
 REM ---- Quit Screen ----
 9000 CLS
@@ -334,3 +363,16 @@ REM ---- Help Screen ----
 9180 PRINT "Press any key..."
 9190 PAUSE 0
 9200 GOTO 200
+
+REM ---- UDG Placeholder Data ----
+9500 DATA 24,60,102,255,255,126,36,36
+9510 DATA 0,126,219,255,126,36,36,0
+9520 DATA 24,60,126,24,24,126,219,0
+9530 DATA 24,60,126,255,24,24,24,0
+9540 DATA 0,126,90,90,90,126,24,0
+9550 DATA 126,66,90,90,90,66,126,0
+9560 DATA 126,129,189,165,165,189,129,126
+9570 DATA 60,102,195,255,255,195,102,60
+9580 DATA 24,60,126,219,219,126,60,24
+9590 DATA 60,126,255,126,90,90,126,24
+9600 DATA 24,60,126,255,255,231,66,0
