@@ -33,19 +33,20 @@ REM ---- Initialise ----
 105 DIM hasHotdog AS UBYTE
 106 DIM answer$ AS STRING
 107 REM UDG A-K are location placeholders.
-108 REM Replace these byte rows later with ZXGraphics Boriel DIM export.
-109 DIM udg(10, 7) AS UBYTE
-110 DIM i, j AS UBYTE
-111 RESTORE 9500
-112 FOR i = 0 TO 10
-113   FOR j = 0 TO 7
-114     READ udg(i, j)
-115   NEXT j
-116 NEXT i
-117 POKE UINTEGER 23675, @udg(0, 0)
-118 LET room = 1
-119 LET hasHotdog = 0
-120 LET msg$ = ""
+108 REM Update these graphics later with ZXGraphics if possible:
+109 REM https://github.com/Duefectu/ZXGraphics
+110 DIM udg(10, 7) AS UBYTE
+111 DIM i, j AS UBYTE
+112 RESTORE 9500
+113 FOR i = 0 TO 10
+114   FOR j = 0 TO 7
+115     READ udg(i, j)
+116   NEXT j
+117 NEXT i
+118 POKE UINTEGER 23675, @udg(0, 0)
+119 LET room = 1
+120 LET hasHotdog = 0
+121 LET msg$ = ""
 
 REM ---- Main Loop ----
 200 CLS
