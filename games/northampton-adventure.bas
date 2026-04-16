@@ -8,20 +8,40 @@
 20 REM ************************************
 
 REM ---- Title Screen ----
-50 BORDER 0 : PAPER 0 : INK 7 : CLS
-55 PRINT AT 3,5; INK 6; "NORTHAMPTON ADVENTURE"
-60 PRINT AT 5,8; "A Text Adventure"
-65 PRINT AT 8,4; "Explore the historic town"
-70 PRINT AT 9,7; "of Northampton!"
-75 PRINT AT 12,2; "Commands:"
-80 PRINT AT 13,2; " GO NORTH, GO SOUTH,"
-85 PRINT AT 14,2; " GO EAST,  GO WEST"
-87 PRINT AT 15,2; " Or just: N, S, E, W"
-88 PRINT AT 16,2; " LOOK - look around"
-89 PRINT AT 17,2; " TALK - interact"
-91 PRINT AT 18,2; " OPEN BAG - check items"
-92 PRINT AT 19,2; " QUIT - end game"
-90 PRINT AT 20,2; "Press any key to begin..."
+REM All Saints Church silhouette fills the upper half of the screen.
+REM ZX Spectrum pixel coords: (0,0)=bottom-left, (255,191)=top-right.
+REM Character rows 0-11 map to y=96-191; text rows 12-23 to y=0-95.
+50 BORDER 1 : PAPER 0 : INK 6 : CLS
+REM Steps (3 tiers, widest at bottom)
+51 PLOT 58, 97 : DRAW 142, 0
+52 PLOT 68, 102 : DRAW 122, 0
+53 PLOT 78, 108 : DRAW 102, 0
+REM Side walls of portico (left and right)
+54 PLOT 78, 108 : DRAW 0, 47
+55 PLOT 180, 108 : DRAW 0, 47
+REM Six columns evenly spaced across the portico
+56 PLOT 91, 108 : DRAW 0, 47
+57 PLOT 106, 108 : DRAW 0, 47
+58 PLOT 121, 108 : DRAW 0, 47
+59 PLOT 136, 108 : DRAW 0, 47
+60 PLOT 151, 108 : DRAW 0, 47
+61 PLOT 166, 108 : DRAW 0, 47
+REM Entablature (horizontal beam at top of columns)
+62 PLOT 78, 155 : DRAW 102, 0
+REM Triangular pediment
+63 PLOT 78, 155 : DRAW 51, 14 : DRAW 51, -14
+REM Central tower above pediment
+64 PLOT 112, 169 : DRAW 34, 0 : DRAW 0, 13 : DRAW -34, 0 : DRAW 0, -13
+REM Dome arch on top of tower
+65 PLOT 112, 182 : DRAW 17, 7 : DRAW 17, -7
+REM Title text
+70 PRINT AT 12, 5; PAPER 0; INK 6; "NORTHAMPTON ADVENTURE"
+71 PRINT AT 13, 8; PAPER 0; INK 7; "A Text Adventure"
+73 PRINT AT 15, 4; PAPER 0; INK 5; "N S E W  -  Move"
+74 PRINT AT 16, 2; PAPER 0; INK 5; "LOOK  TALK  OPEN BAG"
+75 PRINT AT 17, 5; PAPER 0; INK 5; "HELP      QUIT"
+76 PRINT AT 19, 6; PAPER 0; INK 3; "James Bolton 2024"
+77 PRINT AT 21, 3; PAPER 0; INK 7; "Press any key to begin..."
 95 PAUSE 0
 
 REM ---- Initialise ----
