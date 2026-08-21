@@ -1,4 +1,10 @@
-import { useRef, useState, useEffect, useLayoutEffect, type ChangeEvent } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  type ChangeEvent
+} from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 
@@ -63,18 +69,18 @@ const Home = () => {
   return (
     <>
       <Dropdown handleChange={handleOptionChange} value={selectedOption}>
-              <option value="helloworld.tap">Hello World</option>
-              <option value="breakout.tap">Breakout</option>
-              <option value="snake.tap">Snake</option>
-              <option value="northampton-adventure.tap">
-                Northampton Adventure
-              </option>
-              <option value="2-graphics-bank-switching.tap">
-                Test - Graphics Bank Switching
-              </option>
-              <option value="3-loop-function.tap">Test - Loop function</option>
-              <option value="4-circle-plot.tap">Test - Circle plot</option>
-              <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
+        <option value="helloworld.tap">Hello World</option>
+        <option value="breakout.tap">Breakout</option>
+        <option value="snake.tap">Snake</option>
+        <option value="northampton-adventure.tap">Northampton Adventure</option>
+        <option value="2-graphics-bank-switching.tap">
+          Test - Graphics Bank Switching
+        </option>
+        <option value="3-loop-function.tap">Test - Loop function</option>
+        <option value="4-circle-plot.tap">Test - Circle plot</option>
+        <option value="5-basic-platform-logic.tap">
+          Test - Basic platform logic
+        </option>
       </Dropdown>
 
       {/* 
@@ -89,7 +95,7 @@ const Home = () => {
           height: `${scaledHeight}px`,
           overflow: "hidden",
           minWidth: 0,
-          marginTop: "1rem",
+          marginTop: "1rem"
         }}
       >
         {/*
@@ -105,7 +111,7 @@ const Home = () => {
             width: `${EMULATOR_WIDTH}px`,
             minHeight: `${EMULATOR_HEIGHT}px`,
             position: "relative",
-            backgroundColor: "#000",
+            backgroundColor: "#000"
           }}
         >
           {!isStarted && (
@@ -131,11 +137,13 @@ const Home = () => {
                 backgroundColor: "rgba(0, 0, 0, 0.82)",
                 color: "#f7fafc",
                 cursor: isScriptLoaded ? "pointer" : "wait",
-                zIndex: 1,
+                zIndex: 1
               }}
             >
               <strong>
-                {isScriptLoaded ? "Click to start emulator with sound" : "Loading emulator..."}
+                {isScriptLoaded
+                  ? "Click to start emulator with sound"
+                  : "Loading emulator..."}
               </strong>
               <div>
                 {isScriptLoaded
