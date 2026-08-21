@@ -1,10 +1,21 @@
-import { useRef, useState, useEffect, type ChangeEvent } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, type ChangeEvent } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 
-// JSSpeccy at zoom=2 renders at 640×480 (320*2 × 240*2) and stamps these
-// pixel values directly on its internal container via setZoom(). We use these
-// as the fixed inner dimensions and scale the outer wrapper to fit.
+// JSSpeccy at zoom=2 renders at 640×480 (320*2 × 240*2). Its setZoom() method
+// stamps style.width=640px directly on its internal appContainer. We account
+// for this by applying CSS `zoom` (not transform: scale) to the wrapper div.
+//
+// Why zoom, not transform: scale?
+//   transform: scale() is purely visual — it doesn't affect layout dimensions.
+//   This means the outer div needs a manually-tracked height and overflow:hidden
+//   can clip the game after JSSpeccy appends its internal DOM (menubar + canvas).
+//
+//   CSS zoom scales both the visual output AND the layout dimensions, so:
+//   - The outer container naturally shrinks to the correct height automatically.
+//   - No manual height calculation is needed.
+//   - JSSpeccy's inline style.width stamps are still visually scaled correctly.
+//   - The ResizeObserver watches the unzoomed outer div — no feedback loop.
 const EMULATOR_WIDTH = 640;
 const EMULATOR_HEIGHT = 480;
 
@@ -12,24 +23,34 @@ const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState("helloworld.tap");
-  const [emulatorScale, setEmulatorScale] = useState(1);
+  // CSS zoom factor: 1 = full size (640px), <1 = scaled down for narrow viewports
+  const [emulatorZoom, setEmulatorZoom] = useState(1);
 
   const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
     jssSpeccyRef,
     `/games/${selectedOption}`
   );
 
-  // Scale the fixed-size JSSpeccy canvas down to fit the available width.
-  // JSSpeccy internally sets style.width/height in px on its own container
-  // (via setZoom), so we cannot rely on CSS width/height alone. Instead we
-  // measure the outer wrapper and apply a CSS transform scale to the inner div.
+  const computeZoom = (containerWidth: number) =>
+    Math.min(1, containerWidth / EMULATOR_WIDTH);
+
+  // Measure synchronously before the first paint so the correct zoom is applied
+  // immediately — avoids a flash of the full-width 640px emulator on narrow screens.
+  useLayoutEffect(() => {
+    if (emulatorContainerRef.current) {
+      setEmulatorZoom(
+        computeZoom(emulatorContainerRef.current.getBoundingClientRect().width)
+      );
+    }
+  }, []);
+
+  // Keep zoom in sync with any subsequent viewport / layout changes.
   useEffect(() => {
     const container = emulatorContainerRef.current;
     if (!container) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      const availableWidth = entry.contentRect.width;
-      setEmulatorScale(Math.min(1, availableWidth / EMULATOR_WIDTH));
+      setEmulatorZoom(computeZoom(entry.contentRect.width));
     });
 
     observer.observe(container);
@@ -63,29 +84,33 @@ const Home = () => {
         <option value="4-circle-plot.tap">Test - Circle plot</option>
         <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
       </Dropdown>
-      {/* Responsive outer shell — clips the inner fixed-size JSSpeccy canvas */}
+
+      {/*
+        Outer shell: limits max width and provides the resize anchor point.
+        No explicit height — the inner div's CSS zoom participates in layout
+        so the outer div grows/shrinks to fit automatically.
+      */}
       <div
         ref={emulatorContainerRef}
         style={{
           width: "100%",
           maxWidth: `${EMULATOR_WIDTH}px`,
-          // Height tracks the scale so the document flow stays correct
-          height: `${EMULATOR_HEIGHT * emulatorScale}px`,
-          overflow: "hidden",
           marginTop: "1rem",
-          position: "relative",
         }}
       >
-        {/* Inner fixed-size div; scaled down via CSS transform when viewport is narrow */}
+        {/*
+          Inner fixed-size div: always 640×480 in CSS space.
+          CSS zoom scales this (and all JSSpeccy-injected content inside it)
+          proportionally. Unlike transform: scale(), zoom affects layout so
+          JSSpeccy's appContainer.style.width = "640px" stamps are harmless —
+          they are still visually scaled down by the parent zoom.
+        */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
+            zoom: emulatorZoom,
             width: `${EMULATOR_WIDTH}px`,
-            height: `${EMULATOR_HEIGHT}px`,
-            transformOrigin: "top left",
-            transform: `scale(${emulatorScale})`,
+            minHeight: `${EMULATOR_HEIGHT}px`,
+            position: "relative",
             backgroundColor: "#000",
           }}
         >
@@ -112,7 +137,7 @@ const Home = () => {
                 backgroundColor: "rgba(0, 0, 0, 0.82)",
                 color: "#f7fafc",
                 cursor: isScriptLoaded ? "pointer" : "wait",
-                zIndex: 1
+                zIndex: 1,
               }}
             >
               <strong>
@@ -140,7 +165,8 @@ const Home = () => {
             To see all of the games available,{" "}
             <a
               target="_blank"
-              href="https://github.com/jayjaybeeuk/spectrum-game" rel="noreferrer"
+              href="https://github.com/jayjaybeeuk/spectrum-game"
+              rel="noreferrer"
             >
               go to my GitHub page
             </a>
