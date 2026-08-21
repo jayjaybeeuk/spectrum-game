@@ -42,8 +42,9 @@ const Home = () => {
         style={{
           position: "relative",
           display: "inline-block",
-          minHeight: "384px",
-          minWidth: "512px",
+          aspectRatio: "4/3",
+          width: "100%",
+          maxWidth: "512px",
           marginTop: "1rem",
           backgroundColor: "#000"
         }}
