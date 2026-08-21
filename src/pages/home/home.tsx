@@ -95,6 +95,14 @@ const Home = () => {
         style={{
           width: "100%",
           maxWidth: `${EMULATOR_WIDTH}px`,
+          // overflow:hidden is essential: without it, the 640px inner div causes
+          // the flex parent (#root uses display:flex on body) to size to content,
+          // making width:100% resolve to 640px even on narrow viewports. This
+          // locks the ResizeObserver reading at 640px and zoom never drops below 1.
+          // min-width:0 overrides the flex item default (min-width:auto) which
+          // would also prevent the container from shrinking below content width.
+          overflow: "hidden",
+          minWidth: 0,
           marginTop: "1rem",
         }}
       >
