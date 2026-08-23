@@ -21,7 +21,7 @@ for input_file in /input/*.{tzx,tap}; do
     else
       echo "Failed to convert $filename"
     fi
-  done
+  fi
 done
 
 echo "Conversion complete!"
