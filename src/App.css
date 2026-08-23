@@ -17,4 +17,5 @@ body {
   #root {
     padding: 0.5rem;
   }
+  min-width: 0;
 }
