@@ -63,18 +63,18 @@ const Home = () => {
   return (
     <>
       <Dropdown handleChange={handleOptionChange} value={selectedOption}>
-        <option value="helloworld.tap">Hello World</option>
-        <option value="breakout.tap">Breakout</option>
-        <option value="snake.tap">Snake</option>
-        <option value="northampton-adventure.tap">
-          Test - Hello World Playground
-        </option>
-        <option value="2-graphics-bank-switching.tap">
-          Test - Graphics Bank Switching
-        </option>
-        <option value="3-loop-function.tap">Test - Loop function</option>
-        <option value="4-circle-plot.tap">Test - Circle plot</option>
-        <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
+              <option value="helloworld.tap">Hello World</option>
+              <option value="breakout.tap">Breakout</option>
+              <option value="snake.tap">Snake</option>
+              <option value="northampton-adventure.tap">
+                Northampton Adventure
+              </option>
+              <option value="2-graphics-bank-switching.tap">
+                Test - Graphics Bank Switching
+              </option>
+              <option value="3-loop-function.tap">Test - Loop function</option>
+              <option value="4-circle-plot.tap">Test - Circle plot</option>
+              <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
       </Dropdown>
 
       {/* 
