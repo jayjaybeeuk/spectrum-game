@@ -35,9 +35,9 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
       return;
     }
 
-    const existingScript = document.querySelector(
+    const existingScript = document.querySelector<HTMLScriptElement>(
       `script[src="${JSSPECCY_SCRIPT_SRC}"]`
-    ) as HTMLScriptElement | null;
+    );
     const onLoad = () => setIsScriptLoaded(true);
 
     if (existingScript) {
