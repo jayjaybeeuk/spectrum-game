@@ -73,7 +73,7 @@ yarn lint
 
 ## Current UI Observations
 
-- The dropdown in [`src/pages/home/home.tsx`](/Users/jamesbolton/Documents/GIT/Personal/spectrum-game/src/pages/home/home.tsx) is the source of truth for which games are visible in the browser.
+- The `GAMES` list in `src/pages/home/games.ts` is the source of truth for which games are visible in the browser and what they are called.
 - `northampton-adventure.tap` is already exposed there.
 - The selected game defaults to `helloworld.tap`.
 - `DownloadLink` is a very small Chakra `Button` rendered as an anchor.
@@ -114,7 +114,7 @@ When extending text adventures in this repo:
 
 1. Edit the relevant file in `/games`.
 2. Compile the affected game with `./scripts/build.sh <name>`.
-3. If the game should be playable from the site, confirm it exists in the dropdown in [`src/pages/home/home.tsx`](/Users/jamesbolton/Documents/GIT/Personal/spectrum-game/src/pages/home/home.tsx).
+3. If the game should be playable from the site, confirm it exists in the `GAMES` list in `src/pages/home/games.ts`.
 
 ### If you add a brand new game
 
@@ -125,6 +125,6 @@ When extending text adventures in this repo:
 ## Known Constraints
 
 - Python is required for the ZX Basic compiler.
-- There is no automated test suite for the BASIC games; compilation is the main safety check.
+- The React frontend has a Vitest suite (`yarn test`). There is still no automated test suite for the BASIC games themselves; compilation is their main safety check.
 - The emulator is loaded as a global script rather than an npm package import.
 - The README and helper docs are useful, but the source files are the more reliable description of current behavior.
