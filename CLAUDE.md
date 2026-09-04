@@ -29,7 +29,9 @@ spectrum-game/
 ├── src/                    # React TypeScript frontend
 │   ├── components/         # Reusable UI components
 │   │   ├── dropdown/       # Game selector dropdown
-│   │   └── download-link/  # TAP file download button
+│   │   ├── download-link/  # TAP file download button
+│   │   └── cookie-consent/ # Analytics consent banner (gates Clarity)
+│   ├── analytics/          # Microsoft Clarity loader (prod-only, consent-gated)
 │   ├── hooks/              # Custom React hooks
 │   │   └── useLoadJSSpeccy.ts  # Emulator loading hook
 │   ├── pages/              # Page components
@@ -174,7 +176,7 @@ Flags:
 2. **Python Required**: ZX Basic compiler requires Python to run
 3. **JSSpeccy Global**: The `JSSpeccy` function is loaded via script tag and available globally
 4. **Emulator Settings**: Configured with 2x zoom, autoStart, and autoLoadTapes enabled
-5. **Clarity Analytics**: Enabled in production (index.html contains Clarity tag)
+5. **Clarity Analytics**: Loaded by `src/analytics/clarity.ts` only in production builds, only when `VITE_CLARITY_ID` is set (see `.env.example`), and only after the visitor accepts the cookie consent banner (`src/components/cookie-consent`). Never runs under `yarn dev`.
 
 ## Common Tasks
 

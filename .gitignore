@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Local environment config (see .env.example)
+.env
+.env.*
+!.env.example
 __pycache__
 
 # Editor directories and files

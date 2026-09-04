@@ -12,6 +12,14 @@ To and run the games, simple run `yarn dev` to run the compile the games, boot i
 
 If you just want to compile the games for use on an emulator, you can just run `yarn build` for Mac and Linus, or `yarn build:win` for windows platforms.
 
+### Analytics (optional)
+
+The site can use [Microsoft Clarity](https://clarity.microsoft.com/) for anonymised usage analytics. It is off by default:
+
+1. Copy `.env.example` to `.env` and set `VITE_CLARITY_ID` to your Clarity project ID (`.env` is git-ignored).
+2. Clarity only loads in production builds (`yarn build`), never under `yarn dev`.
+3. Visitors are shown a consent banner; the Clarity tag is only injected after they click **Accept**. Their choice is stored in `localStorage`.
+
 ### Converting games to SNA formats
 
 1. Build and run the container:
