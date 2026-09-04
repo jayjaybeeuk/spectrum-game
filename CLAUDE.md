@@ -15,6 +15,7 @@ Spectrum Game is a web-based collection of ZX Spectrum games written in ZX Basic
 ### Frontend
 - **React 18** with TypeScript
 - **Vite** as build tool (with @vitejs/plugin-react-swc)
+- **Vitest** + **React Testing Library** for unit/component tests
 - **Chakra UI** for component library
 - **Framer Motion** for animations
 
@@ -29,9 +30,12 @@ spectrum-game/
 ├── src/                    # React TypeScript frontend
 │   ├── components/         # Reusable UI components
 │   │   ├── dropdown/       # Game selector dropdown
-│   │   └── download-link/  # TAP file download button
+│   │   ├── download-link/  # TAP file download button
+│   │   └── cookie-consent/ # Analytics consent banner (gates Clarity)
+│   ├── analytics/          # Microsoft Clarity loader (prod-only, consent-gated)
 │   ├── hooks/              # Custom React hooks
 │   │   └── useLoadJSSpeccy.ts  # Emulator loading hook
+│   ├── test/               # Vitest setup (jest-dom matchers, cleanup)
 │   ├── pages/              # Page components
 │   │   └── home/           # Main game selection page
 │   ├── App.tsx             # Root component with ChakraProvider
@@ -70,6 +74,12 @@ yarn build
 
 # Lint TypeScript/React code
 yarn lint
+
+# Run unit/component tests (Vitest + Testing Library, jsdom)
+yarn test
+
+# Run tests in watch mode
+yarn test:watch
 
 # Preview production build
 yarn preview
@@ -128,13 +138,15 @@ yarn preview
 1. **Reference the official documentation** at https://zxbasic.readthedocs.io/en/docs/ to ensure correct syntax and language features
 2. **Verify the code compiles** by running `yarn build:games` before committing - this will catch syntax errors and issues with the ZX Basic code
 
+When changing the React frontend, run `yarn test` and `yarn lint` before committing.
+
 ### Adding a New Game
 
 1. Create a `.bas` file in `/games/` directory
 2. Run `yarn build:games` to compile to TAP format and verify code is valid
-3. Add game option to the dropdown in `src/pages/home/home.tsx`:
-   ```tsx
-   <option value="newgame.tap">Game Name</option>
+3. Add the game to the `GAMES` list in `src/pages/home/games.ts` (this drives both the dropdown and the download button label):
+   ```ts
+   { file: "newgame.tap", name: "Game Name" }
    ```
 
 ### Game Compilation Process
@@ -165,16 +177,17 @@ Flags:
 |------|---------|
 | `src/hooks/useLoadJSSpeccy.ts` | Dynamically loads emulator, handles game switching |
 | `src/pages/home/home.tsx` | Main UI with game selector and emulator display |
+| `src/pages/home/games.ts` | List of games (TAP filename + friendly name) shown in the dropdown |
 | `scripts/build.sh` | Compiles .bas files to .tap files |
 | `public/jsspeccy/jsspeccy.js` | JSSpeccy emulator entry point |
 
 ## Important Notes
 
-1. **No Test Framework**: Currently no automated tests configured
+1. **Tests**: Vitest + React Testing Library (jsdom). Test files live next to the code as `*.test.ts(x)`; shared setup is in `src/test/setup.ts`. Run `yarn test` before committing
 2. **Python Required**: ZX Basic compiler requires Python to run
 3. **JSSpeccy Global**: The `JSSpeccy` function is loaded via script tag and available globally
 4. **Emulator Settings**: Configured with 2x zoom, autoStart, and autoLoadTapes enabled
-5. **Clarity Analytics**: Enabled in production (index.html contains Clarity tag)
+5. **Clarity Analytics**: Loaded by `src/analytics/clarity.ts` only in production builds, only when `VITE_CLARITY_ID` is set (see `.env.example`), and only after the visitor accepts the cookie consent banner (`src/components/cookie-consent`). Never runs under `yarn dev`.
 
 ## Common Tasks
 
