@@ -125,6 +125,6 @@ When extending text adventures in this repo:
 ## Known Constraints
 
 - Python is required for the ZX Basic compiler.
-- There is no automated test suite for the BASIC games; compilation is the main safety check.
+- The React frontend has a Vitest suite (`yarn test`). There is still no automated test suite for the BASIC games themselves; compilation is their main safety check.
 - The emulator is loaded as a global script rather than an npm package import.
 - The README and helper docs are useful, but the source files are the more reliable description of current behavior.

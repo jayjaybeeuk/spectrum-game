@@ -15,6 +15,7 @@ Spectrum Game is a web-based collection of ZX Spectrum games written in ZX Basic
 ### Frontend
 - **React 18** with TypeScript
 - **Vite** as build tool (with @vitejs/plugin-react-swc)
+- **Vitest** + **React Testing Library** for unit/component tests
 - **Chakra UI** for component library
 - **Framer Motion** for animations
 
@@ -34,6 +35,7 @@ spectrum-game/
 │   ├── analytics/          # Microsoft Clarity loader (prod-only, consent-gated)
 │   ├── hooks/              # Custom React hooks
 │   │   └── useLoadJSSpeccy.ts  # Emulator loading hook
+│   ├── test/               # Vitest setup (jest-dom matchers, cleanup)
 │   ├── pages/              # Page components
 │   │   └── home/           # Main game selection page
 │   ├── App.tsx             # Root component with ChakraProvider
@@ -72,6 +74,12 @@ yarn build
 
 # Lint TypeScript/React code
 yarn lint
+
+# Run unit/component tests (Vitest + Testing Library, jsdom)
+yarn test
+
+# Run tests in watch mode
+yarn test:watch
 
 # Preview production build
 yarn preview
@@ -130,6 +138,8 @@ yarn preview
 1. **Reference the official documentation** at https://zxbasic.readthedocs.io/en/docs/ to ensure correct syntax and language features
 2. **Verify the code compiles** by running `yarn build:games` before committing - this will catch syntax errors and issues with the ZX Basic code
 
+When changing the React frontend, run `yarn test` and `yarn lint` before committing.
+
 ### Adding a New Game
 
 1. Create a `.bas` file in `/games/` directory
@@ -173,7 +183,7 @@ Flags:
 
 ## Important Notes
 
-1. **No Test Framework**: Currently no automated tests configured
+1. **Tests**: Vitest + React Testing Library (jsdom). Test files live next to the code as `*.test.ts(x)`; shared setup is in `src/test/setup.ts`. Run `yarn test` before committing
 2. **Python Required**: ZX Basic compiler requires Python to run
 3. **JSSpeccy Global**: The `JSSpeccy` function is loaded via script tag and available globally
 4. **Emulator Settings**: Configured with 2x zoom, autoStart, and autoLoadTapes enabled

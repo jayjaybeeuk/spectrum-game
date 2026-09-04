@@ -12,6 +12,15 @@ To and run the games, simple run `yarn dev` to run the compile the games, boot i
 
 If you just want to compile the games for use on an emulator, you can just run `yarn build` for Mac and Linus, or `yarn build:win` for windows platforms.
 
+### Running the tests
+
+Frontend unit and component tests use [Vitest](https://vitest.dev/) with React Testing Library:
+
+```bash
+yarn test        # single run
+yarn test:watch  # watch mode
+```
+
 ### Analytics (optional)
 
 The site can use [Microsoft Clarity](https://clarity.microsoft.com/) for anonymised usage analytics. It is off by default:
