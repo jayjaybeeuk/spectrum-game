@@ -134,9 +134,9 @@ yarn preview
 
 1. Create a `.bas` file in `/games/` directory
 2. Run `yarn build:games` to compile to TAP format and verify code is valid
-3. Add game option to the dropdown in `src/pages/home/home.tsx`:
-   ```tsx
-   <option value="newgame.tap">Game Name</option>
+3. Add the game to the `GAMES` list in `src/pages/home/games.ts` (this drives both the dropdown and the download button label):
+   ```ts
+   { file: "newgame.tap", name: "Game Name" }
    ```
 
 ### Game Compilation Process
@@ -167,6 +167,7 @@ Flags:
 |------|---------|
 | `src/hooks/useLoadJSSpeccy.ts` | Dynamically loads emulator, handles game switching |
 | `src/pages/home/home.tsx` | Main UI with game selector and emulator display |
+| `src/pages/home/games.ts` | List of games (TAP filename + friendly name) shown in the dropdown |
 | `scripts/build.sh` | Compiles .bas files to .tap files |
 | `public/jsspeccy/jsspeccy.js` | JSSpeccy emulator entry point |
 

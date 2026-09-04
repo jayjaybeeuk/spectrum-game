@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useLayoutEffect, type ChangeEvent } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
+import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
 
 // JSSpeccy at zoom=2 renders at 640×480 (320*2 × 240*2). Its setZoom() method
 // stamps style.width=640px directly on its internal appContainer.
@@ -12,13 +13,16 @@ const EMULATOR_HEIGHT = 480;
 const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
-  const [selectedOption, setSelectedOption] = useState("helloworld.tap");
+  const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
   // Scale factor: 1 = full size (640px), <1 = scaled down for narrow viewports
   const [emulatorScale, setEmulatorScale] = useState(1);
 
+  const selectedGame = findGame(selectedOption) ?? DEFAULT_GAME;
+  const selectedGameUrl = getGameUrl(selectedGame.file);
+
   const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
     jssSpeccyRef,
-    `/games/${selectedOption}`
+    selectedGameUrl
   );
 
   const computeScale = (containerWidth: number) =>
@@ -63,18 +67,11 @@ const Home = () => {
   return (
     <>
       <Dropdown handleChange={handleOptionChange} value={selectedOption}>
-              <option value="helloworld.tap">Hello World</option>
-              <option value="breakout.tap">Breakout</option>
-              <option value="snake.tap">Snake</option>
-              <option value="northampton-adventure.tap">
-                Northampton Adventure
-              </option>
-              <option value="2-graphics-bank-switching.tap">
-                Test - Graphics Bank Switching
-              </option>
-              <option value="3-loop-function.tap">Test - Loop function</option>
-              <option value="4-circle-plot.tap">Test - Circle plot</option>
-              <option value="5-basic-platform-logic.tap">Test - Basic platform logic</option>
+        {GAMES.map((game) => (
+          <option key={game.file} value={game.file}>
+            {game.name}
+          </option>
+        ))}
       </Dropdown>
 
       {/* 
@@ -154,7 +151,7 @@ const Home = () => {
             You can download and play this game on an emulator via this tap
             file:
           </div>
-          <DownloadLink tapFile={`/games/${selectedOption}`} />
+          <DownloadLink tapFile={selectedGameUrl} label={selectedGame.name} />
           <div>
             To see all of the games available,{" "}
             <a
