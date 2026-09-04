@@ -31,22 +31,31 @@ The site can use [Microsoft Clarity](https://clarity.microsoft.com/) for anonymi
 
 ### Converting games to SNA formats
 
-1. Build and run the container:
+`scripts/convert.sh` converts `.tzx` / `.tap` tape images to `.sna` snapshots using `tzx2sna` and `tap2sna`. The easiest way to run it is via the Docker container, which mounts `./public/games` as its working directory:
+
+1. Build the container:
 
 ```bash
 docker compose build
-docker compose up -d
 ```
 
-2. Convert files:
+2. Convert files (the `.sna` is written next to the input):
 
 ```bash
-# Convert single file
-docker compose run spectrum convert yourgame.tzx
+# Convert every .tzx / .tap in public/games
+docker compose run --rm spectrum convert
 
-# Or open interactive shell
-docker compose exec spectrum bash
+# Convert specific files
+docker compose run --rm spectrum convert snake.tap breakout.tap
+
+# Write snapshots to a different directory (relative to /games in the container)
+docker compose run --rm spectrum convert -o snapshots snake.tap
+
+# Or open an interactive shell
+docker compose run --rm spectrum bash
 ```
+
+The script exits non-zero if no input files are found or any conversion fails. Run `convert -h` for usage.
 
 ## ZX Basic and JSSpectrum Licenses
 
