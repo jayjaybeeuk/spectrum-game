@@ -1,4 +1,5 @@
 #include <input.bas>
+#include <string.bas>
 
 10 REM ************ZX CODE CLUB************
 14 REM *                                  *
@@ -67,6 +68,11 @@ REM ---- Initialise ----
 119 LET room = 1
 120 LET hasHotdog = 0
 121 LET msg$ = ""
+REM drunkState: 0 = awake and shouting, 1 = asleep, 2 = gone (took your wallet)
+122 DIM drunkState AS UBYTE
+123 DIM hasWallet AS UBYTE
+124 LET drunkState = 0
+125 LET hasWallet = 1
 
 REM ---- Main Loop ----
 200 CLS
@@ -87,7 +93,7 @@ REM ---- Parse Commands ----
 340 IF cmd$ = "look" OR cmd$ = "LOOK" OR cmd$ = "l" OR cmd$ = "L" THEN GOTO 200: END IF
 350 IF cmd$ = "quit" OR cmd$ = "QUIT" OR cmd$ = "q" OR cmd$ = "Q" THEN GOTO 9000: END IF
 360 IF cmd$ = "help" OR cmd$ = "HELP" OR cmd$ = "h" OR cmd$ = "H" THEN GOTO 9100: END IF
-365 IF cmd$ = "talk to man" OR cmd$ = "TALK TO MAN" OR cmd$ = "talk" OR cmd$ = "TALK" THEN GOTO 600: END IF
+365 IF cmd$ = "talk to man" OR cmd$ = "TALK TO MAN" OR cmd$ = "talk" OR cmd$ = "TALK" OR cmd$ = "talk to drunk" OR cmd$ = "TALK TO DRUNK" OR cmd$ = "talk to drunk man" OR cmd$ = "TALK TO DRUNK MAN" THEN GOTO 590: END IF
 367 IF cmd$ = "open bag" OR cmd$ = "OPEN BAG" OR cmd$ = "look in bag" OR cmd$ = "LOOK IN BAG" OR cmd$ = "bag" OR cmd$ = "BAG" OR cmd$ = "inventory" OR cmd$ = "INVENTORY" OR cmd$ = "i" OR cmd$ = "I" THEN GOTO 700: END IF
 370 LET msg$ = "I don't understand that."
 380 GOTO 200
@@ -107,9 +113,13 @@ REM ---- Movement Sound ----
 810 BEEP 0.03, 14
 820 RETURN
 
-REM ---- Talk to Man ----
-600 IF room <> 2 THEN LET msg$ = "There is nobody here to talk to." : GOTO 200: END IF
-605 IF hasHotdog = 1 THEN LET msg$ = "The man says: Enjoy your hotdog!" : GOTO 200: END IF
+REM ---- Talk: pick who is in this room ----
+590 IF room = 2 THEN GOTO 600: END IF
+592 IF room = 5 THEN GOTO 3000: END IF
+595 LET msg$ = "There is nobody here to talk to." : GOTO 200
+
+REM ---- Talk to Hotdog Seller (Market Square) ----
+600 IF hasHotdog = 1 THEN LET msg$ = "The man says: Enjoy your hotdog!" : GOTO 200: END IF
 610 CLS
 615 PRINT INK 6; "HOTDOG SELLER"
 620 PRINT ""
@@ -122,8 +132,9 @@ REM ---- Talk to Man ----
 655 PRINT "Do you want to buy a hotdog?"
 660 PRINT INK 4; "(YES or NO) ";
 665 LET answer$ = INPUT(10)
-670 IF answer$ = "yes" OR answer$ = "YES" OR answer$ = "y" OR answer$ = "Y" THEN GOTO 680: END IF
+670 IF answer$ = "yes" OR answer$ = "YES" OR answer$ = "y" OR answer$ = "Y" THEN GOTO 678: END IF
 675 LET msg$ = "Maybe next time! says the man." : GOTO 200
+678 IF hasWallet = 0 THEN LET msg$ = "You reach for your wallet... it's gone! No money, no hotdog, mate." : GOTO 200: END IF
 680 LET hasHotdog = 1
 685 LET msg$ = "You buy a hotdog and put it in your bag."
 690 GOTO 200
@@ -132,9 +143,10 @@ REM ---- Open Bag / Look in Bag ----
 700 CLS
 705 PRINT INK 6; "YOUR BAG"
 710 PRINT ""
-715 IF hasHotdog = 0 THEN PRINT "Your bag is empty." : GOTO 740: END IF
+715 IF hasHotdog = 0 AND hasWallet = 0 THEN PRINT "Your bag is empty." : GOTO 740: END IF
 720 PRINT "Your bag contains:"
 725 PRINT ""
+728 IF hasWallet = 1 THEN PRINT " - Your wallet": END IF
 730 IF hasHotdog = 1 THEN PRINT " - A hotdog": END IF
 740 PRINT ""
 745 PRINT "Press any key..."
@@ -246,6 +258,7 @@ REM Room 5: The Drapery (West)
 1555 PRINT "dark timber frame. The church"
 1560 PRINT "lies back to the east and"
 1562 PRINT "the museum is west."
+1563 GOSUB 3200
 1565 GOSUB 2000
 1570 RETURN
 
@@ -361,6 +374,55 @@ REM ---- Draw Room Placeholder Graphic ----
 2520 PRINT AT 1,28; INK 4; CHR$(143 + room); CHR$(143 + room)
 2530 PRINT AT 1,0;
 2540 RETURN
+
+REM ---- Talk to Drunk Man (The Drapery) ----
+3000 IF drunkState = 1 THEN LET msg$ = "The drunk man is fast asleep and snoring. Best leave him be." : GOTO 200: END IF
+3005 IF drunkState = 2 THEN LET msg$ = "Nobody here to talk to. The drunk man has gone, and so has your wallet." : GOTO 200: END IF
+3010 CLS
+3015 PRINT INK 6; "DRUNK MAN"
+3020 PRINT ""
+3025 PRINT "You try to reason with him."
+3030 PRINT "Big mistake. His face turns"
+3035 PRINT "purple and he lurches in"
+3040 PRINT "close, breathing beer fumes"
+3045 PRINT "all over you."
+3050 PRINT ""
+3055 PRINT INK 3; """Oh, a CLEVER one, are ya?"
+3060 PRINT INK 3; " Nobody talks to me without"
+3065 PRINT INK 3; " passing the test. Get this"
+3070 PRINT INK 3; " wrong and you'll be sorry."
+3075 PRINT INK 3; " What is the nickname of"
+3080 PRINT INK 3; " our football team?"""
+3085 PRINT ""
+3090 BEEP 0.1, -5 : BEEP 0.1, -10
+3095 PRINT INK 4; "Your answer? ";
+3100 LET answer$ = UCASE(INPUT(20))
+3105 IF answer$ = "COBBLERS" OR answer$ = "THE COBBLERS" THEN GOTO 3150: END IF
+REM Wrong answer: he steals your wallet and leaves for good
+3110 LET drunkState = 2
+3115 LET hasWallet = 0
+3120 BEEP 0.2, -15
+3125 LET msg$ = "WRONG! he roars. He snatches the wallet from your bag and staggers off into the crowd."
+3130 GOTO 200
+REM Right answer: he calms down and falls asleep
+3150 LET drunkState = 1
+3155 BEEP 0.1, 5 : BEEP 0.1, 9 : BEEP 0.2, 12
+3160 LET msg$ = "UP THE COBBLERS! he cheers. He lets you go, slides down the wall and starts snoring."
+3165 GOTO 200
+
+REM ---- Drunk Man in Room Description ----
+3200 IF drunkState = 1 THEN GOTO 3230: END IF
+3205 IF drunkState = 2 THEN GOTO 3260: END IF
+3210 PRINT INK 2; "A drunk man sways by the Welsh"
+3215 PRINT INK 2; "House, jabbing a finger at you."
+3220 PRINT INK 2; "Oi! YOU! What you looking at?"
+3228 RETURN
+3230 PRINT INK 2; "A drunk man is slumped asleep"
+3235 PRINT INK 2; "in a doorway, snoring loudly."
+3240 RETURN
+3260 PRINT INK 2; "The doorway where the drunk"
+3265 PRINT INK 2; "man stood is empty now."
+3270 RETURN
 
 REM ---- Quit Screen ----
 9000 CLS
