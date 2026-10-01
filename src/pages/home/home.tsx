@@ -43,12 +43,22 @@ const Home = () => {
     const container = emulatorContainerRef.current;
     if (!container) return;
 
+    // ⚡ Bolt: Throttled ResizeObserver with requestAnimationFrame to prevent
+    // excessive synchronous React re-renders during window resizing.
+    // Impact: Limits state updates to 1 per frame (max ~60fps) instead of firing multiple times per frame.
+    let animationFrameId: number = 0;
     const observer = new ResizeObserver(([entry]) => {
-      setEmulatorScale(computeScale(entry.contentRect.width));
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        setEmulatorScale(computeScale(entry.contentRect.width));
+      });
     });
 
     observer.observe(container);
-    return () => observer.disconnect();
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
+    };
   }, []);
 
   const handleOptionChange = (event: ChangeEvent<HTMLSelectElement>) => {
