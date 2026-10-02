@@ -438,7 +438,6 @@ class OptimizerVisitor(UniqueVisitor):
 
         yield node
 
-    # TODO: ignore unused labels
     def _visit_LABEL(self, node):
         if self.O_LEVEL and not node.accessed:
             yield self.NOP
