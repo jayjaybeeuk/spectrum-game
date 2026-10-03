@@ -14,7 +14,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module",
     "project": true,
-    "tsconfigRootDir": "__dirname"
+    "tsconfigRootDir": "."
   },
   "plugins": ["react-refresh"],
   "rules": {
