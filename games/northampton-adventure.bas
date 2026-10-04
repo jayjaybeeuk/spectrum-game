@@ -73,10 +73,13 @@ REM drunkState: 0 = awake and shouting, 1 = asleep, 2 = gone (took your wallet)
 123 DIM hasWallet AS UBYTE
 124 LET drunkState = 0
 125 LET hasWallet = 1
+126 DIM dogFollowing AS UBYTE
+127 LET dogFollowing = 0
 
 REM ---- Main Loop ----
 200 CLS
 205 GOSUB 1000
+206 IF dogFollowing = 1 THEN PRINT INK 6; "A dog is following you." : END IF
 210 IF msg$ <> "" THEN
 211 PRINT : PRINT INK 2; msg$ : LET msg$ = ""
 212 END IF
@@ -94,6 +97,7 @@ REM ---- Parse Commands ----
 350 IF cmd$ = "quit" OR cmd$ = "QUIT" OR cmd$ = "q" OR cmd$ = "Q" THEN GOTO 9000: END IF
 360 IF cmd$ = "help" OR cmd$ = "HELP" OR cmd$ = "h" OR cmd$ = "H" THEN GOTO 9100: END IF
 365 IF cmd$ = "talk to man" OR cmd$ = "TALK TO MAN" OR cmd$ = "talk" OR cmd$ = "TALK" OR cmd$ = "talk to drunk" OR cmd$ = "TALK TO DRUNK" OR cmd$ = "talk to drunk man" OR cmd$ = "TALK TO DRUNK MAN" THEN GOTO 590: END IF
+366 IF cmd$ = "talk to dog" OR cmd$ = "TALK TO DOG" OR cmd$ = "talk dog" OR cmd$ = "TALK DOG" THEN GOTO 3300: END IF
 367 IF cmd$ = "open bag" OR cmd$ = "OPEN BAG" OR cmd$ = "look in bag" OR cmd$ = "LOOK IN BAG" OR cmd$ = "bag" OR cmd$ = "BAG" OR cmd$ = "inventory" OR cmd$ = "INVENTORY" OR cmd$ = "i" OR cmd$ = "I" THEN GOTO 700: END IF
 370 LET msg$ = "I don't understand that."
 380 GOTO 200
@@ -200,6 +204,7 @@ REM Room 2: Market Square (North)
 1247 PRINT "drifts towards you. A stone"
 1248 PRINT "fountain splashes gently in"
 1250 PRINT "the centre of the square."
+1252 IF dogFollowing = 0 THEN PRINT "A dog sits in the corner." : END IF
 1255 PRINT "All Saints Church lies to"
 1260 PRINT "the south. Market Walk is"
 1262 PRINT "to the east and the"
@@ -424,6 +429,11 @@ REM ---- Drunk Man in Room Description ----
 3265 PRINT INK 2; "man stood is empty now."
 3270 RETURN
 
+REM ---- Talk to Dog ----
+3300 IF dogFollowing = 1 THEN LET msg$ = "The dog wags its tail happily." : GOTO 200: END IF
+3310 IF room = 2 AND dogFollowing = 0 THEN LET dogFollowing = 1 : LET msg$ = "You pat the dog. It starts following you!" : GOTO 200: END IF
+3320 LET msg$ = "There is no dog here to talk to." : GOTO 200
+
 REM ---- Quit Screen ----
 9000 CLS
 9010 PRINT AT 10,4; "Thanks for exploring"
@@ -444,6 +454,7 @@ REM ---- Help Screen ----
 9145 PRINT " GO WEST   (or W)"
 9150 PRINT " LOOK      (or L)"
 9152 PRINT " TALK      (or TALK TO MAN)"
+9153 PRINT " TALK TO DOG"
 9154 PRINT " OPEN BAG  (or I)"
 9155 PRINT " HELP      (or H)"
 9160 PRINT " QUIT      (or Q)"
