@@ -25,5 +25,8 @@ export const DEFAULT_GAME = GAMES[0];
 
 export const getGameUrl = (file: string) => `${GAMES_PATH}/${file}`;
 
-export const findGame = (file: string) =>
-  GAMES.find((game) => game.file === file);
+const gamesByFile = new Map<string, Game>(
+  GAMES.map((game) => [game.file, game])
+);
+
+export const findGame = (file: string) => gamesByFile.get(file);
