@@ -29,6 +29,11 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
 
+  const openUrlRef = useRef(openUrl);
+  useEffect(() => {
+    openUrlRef.current = openUrl;
+  }, [openUrl]);
+
   useEffect(() => {
     if (window.JSSpeccy) {
       setIsScriptLoaded(true);
@@ -71,17 +76,20 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
     });
   };
 
+  // ⚡ Bolt: Stabilized startEmulator by using a ref for openUrl.
+  // Impact: Allows startEmulator to maintain a stable reference, enabling React.memo()
+  // on child components that receive it as a prop.
   const startEmulator = useCallback(() => {
     if (emu.current) {
       return;
     }
 
-    const newEmu = initEmulator(openUrl);
+    const newEmu = initEmulator(openUrlRef.current);
     if (newEmu) {
       emu.current = newEmu;
       setIsStarted(true);
     }
-  }, [openUrl, ref]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ref]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the selected game changes while the emulator is already running,
   // destroy the current instance and boot a fresh one with the new URL.
