@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, memo, type ChangeEvent, type RefObject } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -17,10 +17,10 @@ interface ScaledEmulatorContainerProps {
   startEmulator: () => void;
 }
 
-// ⚡ Bolt: Extracted ScaledEmulatorContainer to localize the emulatorScale state.
-// Impact: Prevents the parent Home component (and Dropdown/DownloadLink) from re-rendering
-// up to 60fps during window resizing, isolating the render cost to just this container.
-const ScaledEmulatorContainer = ({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
+// ⚡ Bolt: Wrapped ScaledEmulatorContainer in React.memo().
+// Impact: Prevents the entire emulator container and overlay from re-rendering
+// unnecessarily when the user selects a different game from the dropdown.
+const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
   const [emulatorScale, setEmulatorScale] = useState(1);
 
@@ -127,7 +127,7 @@ const ScaledEmulatorContainer = ({ jssSpeccyRef, isStarted, isScriptLoaded, star
       </div>
     </div>
   );
-};
+});
 
 const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
