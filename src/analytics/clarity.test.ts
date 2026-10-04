@@ -3,6 +3,37 @@ import { initClarity } from "./clarity";
 
 const CLARITY_SCRIPT = "script#ms-clarity";
 
+describe("isAnalyticsEnabled", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("returns true in production with a project ID", async () => {
+    vi.resetModules();
+    vi.stubEnv("PROD", true);
+    vi.stubEnv("VITE_CLARITY_ID", "abc1234");
+    const { isAnalyticsEnabled } = await import("./clarity");
+    expect(isAnalyticsEnabled()).toBe(true);
+  });
+
+  it("returns false outside production, even with a project ID", async () => {
+    vi.resetModules();
+    vi.stubEnv("PROD", false);
+    vi.stubEnv("VITE_CLARITY_ID", "abc1234");
+    const { isAnalyticsEnabled } = await import("./clarity");
+    expect(isAnalyticsEnabled()).toBe(false);
+  });
+
+  it("returns false in production without a project ID", async () => {
+    vi.resetModules();
+    vi.stubEnv("PROD", true);
+    vi.stubEnv("VITE_CLARITY_ID", "");
+    const { isAnalyticsEnabled } = await import("./clarity");
+    expect(isAnalyticsEnabled()).toBe(false);
+  });
+});
+
 describe("initClarity", () => {
   afterEach(() => {
     document.querySelectorAll(CLARITY_SCRIPT).forEach((s) => s.remove());
