@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect, memo, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, memo, useCallback, type ChangeEvent, type RefObject } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -129,6 +129,15 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
   );
 });
 
+// ⚡ Bolt: Extracted static options outside the component.
+// Impact: Prevents recreating the children array for Dropdown on every render,
+// reducing GC pressure and enabling Dropdown to be safely memoized.
+const GAME_OPTIONS = GAMES.map((game) => (
+  <option key={game.file} value={game.file}>
+    {game.name}
+  </option>
+));
+
 const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
@@ -141,22 +150,17 @@ const Home = () => {
     selectedGameUrl
   );
 
-
-
-  const handleOptionChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  // ⚡ Bolt: Wrapped handleOptionChange in useCallback.
+  // Impact: Maintains a stable reference for the handleChange prop, which enables
+  // the Dropdown component to avoid unnecessary re-renders when other state changes.
+  const handleOptionChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
-  };
-
-
+  }, []);
 
   return (
     <>
       <Dropdown handleChange={handleOptionChange} value={selectedOption}>
-        {GAMES.map((game) => (
-          <option key={game.file} value={game.file}>
-            {game.name}
-          </option>
-        ))}
+        {GAME_OPTIONS}
       </Dropdown>
 
       <ScaledEmulatorContainer
