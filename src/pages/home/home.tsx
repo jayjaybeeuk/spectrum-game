@@ -22,31 +22,38 @@ interface ScaledEmulatorContainerProps {
 // unnecessarily when the user selects a different game from the dropdown.
 const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
-  const [emulatorScale, setEmulatorScale] = useState(1);
+  const scaledContainerRef = useRef<HTMLDivElement>(null);
 
   const computeScale = (containerWidth: number) =>
     Math.min(1, containerWidth / EMULATOR_WIDTH);
 
-  useLayoutEffect(() => {
-    if (emulatorContainerRef.current) {
-      setEmulatorScale(
-        computeScale(emulatorContainerRef.current.getBoundingClientRect().width)
-      );
+  const applyScale = useCallback((scale: number) => {
+    if (emulatorContainerRef.current && scaledContainerRef.current) {
+      emulatorContainerRef.current.style.height = `${EMULATOR_HEIGHT * scale}px`;
+      scaledContainerRef.current.style.transform = `scale(${scale})`;
     }
   }, []);
+
+  useLayoutEffect(() => {
+    if (emulatorContainerRef.current) {
+      applyScale(computeScale(emulatorContainerRef.current.getBoundingClientRect().width));
+    }
+  }, [applyScale]);
 
   useEffect(() => {
     const container = emulatorContainerRef.current;
     if (!container) return;
 
-    // ⚡ Bolt: Throttled ResizeObserver with requestAnimationFrame to prevent
-    // excessive synchronous React re-renders during window resizing.
-    // Impact: Limits state updates to 1 per frame (max ~60fps) instead of firing multiple times per frame.
+    // ⚡ Bolt: Bypassed React state for high-frequency ResizeObserver events.
+    // Impact: Completely eliminates React re-renders and virtual DOM diffing during
+    // window resizes by mutating the CSS transform and height properties directly
+    // on the DOM nodes via refs. This drops render cycles per frame to 0, massively
+    // reducing main-thread blocking time on resize.
     let animationFrameId = 0;
     const observer = new ResizeObserver(([entry]) => {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = requestAnimationFrame(() => {
-        setEmulatorScale(computeScale(entry.contentRect.width));
+        applyScale(computeScale(entry.contentRect.width));
       });
     });
 
@@ -55,7 +62,7 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
       cancelAnimationFrame(animationFrameId);
       observer.disconnect();
     };
-  }, []);
+  }, [applyScale]);
 
   const handleStartOverlayActivate = () => {
     if (isScriptLoaded) {
@@ -63,23 +70,22 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
     }
   };
 
-  const scaledHeight = EMULATOR_HEIGHT * emulatorScale;
-
   return (
     <div
       ref={emulatorContainerRef}
       style={{
         width: "100%",
         maxWidth: `${EMULATOR_WIDTH}px`,
-        height: `${scaledHeight}px`,
+        height: `${EMULATOR_HEIGHT}px`, // Initial height, updated via ref
         overflow: "hidden",
         minWidth: 0,
         marginTop: "1rem",
       }}
     >
       <div
+        ref={scaledContainerRef}
         style={{
-          transform: `scale(${emulatorScale})`,
+          transform: `scale(1)`, // Initial scale, updated via ref
           transformOrigin: "top left",
           width: `${EMULATOR_WIDTH}px`,
           minHeight: `${EMULATOR_HEIGHT}px`,
