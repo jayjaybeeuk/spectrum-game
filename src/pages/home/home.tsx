@@ -10,6 +10,9 @@ import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
 const EMULATOR_WIDTH = 640;
 const EMULATOR_HEIGHT = 480;
 
+const computeScale = (containerWidth: number) =>
+  Math.min(1, containerWidth / EMULATOR_WIDTH);
+
 interface ScaledEmulatorContainerProps {
   jssSpeccyRef: RefObject<HTMLDivElement>;
   isStarted: boolean;
@@ -23,9 +26,6 @@ interface ScaledEmulatorContainerProps {
 const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
   const scaledContainerRef = useRef<HTMLDivElement>(null);
-
-  const computeScale = (containerWidth: number) =>
-    Math.min(1, containerWidth / EMULATOR_WIDTH);
 
   const applyScale = useCallback((scale: number) => {
     if (emulatorContainerRef.current && scaledContainerRef.current) {
@@ -144,6 +144,40 @@ const GAME_OPTIONS = GAMES.map((game) => (
   </option>
 ));
 
+interface GameInfoProps {
+  selectedOption: string;
+  selectedGameUrl: string;
+  selectedGameName: string;
+}
+
+// ⚡ Bolt: Extracted GameInfo into a memoized component.
+// Impact: Prevents unnecessary reconciliation of the game information UI
+// when the emulator state changes.
+const GameInfo = memo(({ selectedOption, selectedGameUrl, selectedGameName }: GameInfoProps) => {
+  if (!selectedOption) return null;
+
+  return (
+    <div>
+      <div>
+        You can download and play this game on an emulator via this tap
+        file:
+      </div>
+      <DownloadLink tapFile={selectedGameUrl} label={selectedGameName} />
+      <div>
+        To see all of the games available,{" "}
+        <a
+          target="_blank"
+          href="https://github.com/jayjaybeeuk/spectrum-game"
+          rel="noreferrer"
+        >
+          go to my GitHub page
+        </a>
+        .
+      </div>
+    </div>
+  );
+});
+
 const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
@@ -176,26 +210,11 @@ const Home = () => {
         startEmulator={startEmulator}
       />
 
-      {selectedOption && (
-        <div>
-          <div>
-            You can download and play this game on an emulator via this tap
-            file:
-          </div>
-          <DownloadLink tapFile={selectedGameUrl} label={selectedGame.name} />
-          <div>
-            To see all of the games available,{" "}
-            <a
-              target="_blank"
-              href="https://github.com/jayjaybeeuk/spectrum-game"
-              rel="noreferrer"
-            >
-              go to my GitHub page
-            </a>
-            .
-          </div>
-        </div>
-      )}
+      <GameInfo
+        selectedOption={selectedOption}
+        selectedGameUrl={selectedGameUrl}
+        selectedGameName={selectedGame.name}
+      />
     </>
   );
 };
