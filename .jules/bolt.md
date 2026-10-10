@@ -7,3 +7,6 @@
 ## 2025-03-05 - Extracting Static UI to Memoized Components
 **Learning:** Having static or minimally-changing UI (like game details and download links) in the same component as rapidly updating state (like emulator startup state) causes unnecessary reconciliation of the static UI's DOM elements on every state change.
 **Action:** Extract such UI into separate components wrapped in `React.memo`, passing down only the necessary primitive props (like string values) to prevent wasteful re-renders when the parent's unrelated state updates.
+## 2025-03-05 - Caching DOM Writes in High-Frequency Resize Handlers
+**Learning:** Even when bypassing React state in high-frequency event handlers like `ResizeObserver`, unconditionally writing to DOM style properties (like `style.height` and `style.transform`) still triggers unnecessary browser work if the computed values haven't actually changed. For instance, resizing a window wider than a container's maximum width continuously fires the observer, repeatedly applying the exact same maximum scale value.
+**Action:** When updating DOM element styles manually outside the render cycle, always cache the last applied value (e.g. in a `useRef`) and return early if the newly calculated value equals the cached one, preventing redundant DOM style writes.
