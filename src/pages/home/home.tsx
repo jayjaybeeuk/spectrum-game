@@ -26,11 +26,15 @@ interface ScaledEmulatorContainerProps {
 const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
   const emulatorContainerRef = useRef<HTMLDivElement>(null);
   const scaledContainerRef = useRef<HTMLDivElement>(null);
+  const currentScaleRef = useRef<number | null>(null);
 
   const applyScale = useCallback((scale: number) => {
+    if (currentScaleRef.current === scale) return;
+
     if (emulatorContainerRef.current && scaledContainerRef.current) {
       emulatorContainerRef.current.style.height = `${EMULATOR_HEIGHT * scale}px`;
       scaledContainerRef.current.style.transform = `scale(${scale})`;
+      currentScaleRef.current = scale;
     }
   }, []);
 
