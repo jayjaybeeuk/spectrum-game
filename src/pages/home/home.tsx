@@ -91,6 +91,10 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
         style={{
           transform: `scale(1)`, // Initial scale, updated via ref
           transformOrigin: "top left",
+          // ⚡ Bolt: Promoted the scaled container to a hardware-accelerated layer.
+          // Impact: Offloads dynamic scaling of the active JSSpeccy canvas during window resize
+          // from the CPU to the GPU. This prevents expensive main-thread repaints on every resize frame.
+          willChange: "transform",
           width: `${EMULATOR_WIDTH}px`,
           minHeight: `${EMULATOR_HEIGHT}px`,
           position: "relative",
