@@ -101,6 +101,15 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
     }
 
     emu.current.exit();
+
+    // ⚡ Bolt: Clear the innerHTML of the container before creating a new emulator.
+    // Impact: JSSpeccy does not remove its DOM elements (canvas) when `exit()` is called.
+    // Without this, switching games repeatedly adds new canvases, causing memory leaks
+    // and rendering glitches.
+    if (ref.current) {
+      ref.current.innerHTML = "";
+    }
+
     emu.current = initEmulator(openUrl);
   }, [openUrl]); // eslint-disable-line react-hooks/exhaustive-deps
   // Intentionally omitting isStarted/ref/JSSpeccy — this effect should only
