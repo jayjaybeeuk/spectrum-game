@@ -10,3 +10,6 @@
 ## 2025-03-05 - Caching DOM Writes in High-Frequency Resize Handlers
 **Learning:** Even when bypassing React state in high-frequency event handlers like `ResizeObserver`, unconditionally writing to DOM style properties (like `style.height` and `style.transform`) still triggers unnecessary browser work if the computed values haven't actually changed. For instance, resizing a window wider than a container's maximum width continuously fires the observer, repeatedly applying the exact same maximum scale value.
 **Action:** When updating DOM element styles manually outside the render cycle, always cache the last applied value (e.g. in a `useRef`) and return early if the newly calculated value equals the cached one, preventing redundant DOM style writes.
+## 2024-10-14 - JSSpeccy Teardown DOM Accumulation
+**Learning:** JSSpeccy's `exit()` method stops the emulator but fails to tear down its injected DOM elements (like the canvas). This causes old canvases to accumulate indefinitely in the DOM every time a new game is loaded, eventually leading to performance degradation and memory leaks.
+**Action:** When working with 3rd-party emulators like JSSpeccy in React, explicitly clear the container's `innerHTML` during the teardown phase (after calling exit/destroy) before a new instance is created.
