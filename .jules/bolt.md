@@ -13,3 +13,6 @@
 ## 2024-10-14 - JSSpeccy Teardown DOM Accumulation
 **Learning:** JSSpeccy's `exit()` method stops the emulator but fails to tear down its injected DOM elements (like the canvas). This causes old canvases to accumulate indefinitely in the DOM every time a new game is loaded, eventually leading to performance degradation and memory leaks.
 **Action:** When working with 3rd-party emulators like JSSpeccy in React, explicitly clear the container's `innerHTML` during the teardown phase (after calling exit/destroy) before a new instance is created.
+## 2025-03-05 - ResizeObserver and requestAnimationFrame Anti-Pattern
+**Learning:** Wrapping a `ResizeObserver` callback in `requestAnimationFrame` is an anti-pattern when the goal is to keep layout changes in sync. `ResizeObserver` callbacks naturally fire *before* the browser paints the current frame. Wrapping the layout update in `requestAnimationFrame` defers the DOM changes to the *next* frame's paint cycle, causing a 1-frame visual desynchronization (jitter/lag) between the container's resize and the inner content's scaling.
+**Action:** When updating visual properties in a `ResizeObserver` callback to keep elements structurally in sync, execute the DOM mutations directly and synchronously within the callback to ensure they are painted in the same frame as the resize event.
