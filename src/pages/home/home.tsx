@@ -53,17 +53,15 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
     // window resizes by mutating the CSS transform and height properties directly
     // on the DOM nodes via refs. This drops render cycles per frame to 0, massively
     // reducing main-thread blocking time on resize.
-    let animationFrameId = 0;
     const observer = new ResizeObserver(([entry]) => {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = requestAnimationFrame(() => {
-        applyScale(computeScale(entry.contentRect.width));
-      });
+      // ⚡ Bolt: Removed requestAnimationFrame delay from ResizeObserver.
+      // Impact: ResizeObserver natively runs before paint. Delaying via rAF pushes
+      // the DOM update to the next frame, causing 1-frame visual layout jitter.
+      applyScale(computeScale(entry.contentRect.width));
     });
 
     observer.observe(container);
     return () => {
-      cancelAnimationFrame(animationFrameId);
       observer.disconnect();
     };
   }, [applyScale]);
