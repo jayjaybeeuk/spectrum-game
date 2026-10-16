@@ -48,22 +48,17 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
     const container = emulatorContainerRef.current;
     if (!container) return;
 
-    // ⚡ Bolt: Bypassed React state for high-frequency ResizeObserver events.
+    // ⚡ Bolt: Bypassed React state for high-frequency ResizeObserver events and removed requestAnimationFrame.
     // Impact: Completely eliminates React re-renders and virtual DOM diffing during
     // window resizes by mutating the CSS transform and height properties directly
-    // on the DOM nodes via refs. This drops render cycles per frame to 0, massively
-    // reducing main-thread blocking time on resize.
-    let animationFrameId = 0;
+    // on the DOM nodes via refs. Removing requestAnimationFrame prevents a 1-frame
+    // delay that causes visual lag during resize.
     const observer = new ResizeObserver(([entry]) => {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = requestAnimationFrame(() => {
-        applyScale(computeScale(entry.contentRect.width));
-      });
+      applyScale(computeScale(entry.contentRect.width));
     });
 
     observer.observe(container);
     return () => {
-      cancelAnimationFrame(animationFrameId);
       observer.disconnect();
     };
   }, [applyScale]);
