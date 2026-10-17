@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect, memo, useCallback, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, memo, useCallback, type ChangeEvent, type RefObject } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -9,9 +9,6 @@ import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
 // The outer container gets explicit height = EMULATOR_HEIGHT * scale so layout doesn't collapse.
 const EMULATOR_WIDTH = 640;
 const EMULATOR_HEIGHT = 480;
-
-const computeScale = (containerWidth: number) =>
-  Math.min(1, containerWidth / EMULATOR_WIDTH);
 
 interface ScaledEmulatorContainerProps {
   jssSpeccyRef: RefObject<HTMLDivElement>;
@@ -24,45 +21,6 @@ interface ScaledEmulatorContainerProps {
 // Impact: Prevents the entire emulator container and overlay from re-rendering
 // unnecessarily when the user selects a different game from the dropdown.
 const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
-  const emulatorContainerRef = useRef<HTMLDivElement>(null);
-  const scaledContainerRef = useRef<HTMLDivElement>(null);
-  const currentScaleRef = useRef<number | null>(null);
-
-  const applyScale = useCallback((scale: number) => {
-    if (currentScaleRef.current === scale) return;
-
-    if (emulatorContainerRef.current && scaledContainerRef.current) {
-      emulatorContainerRef.current.style.height = `${EMULATOR_HEIGHT * scale}px`;
-      scaledContainerRef.current.style.transform = `scale(${scale})`;
-      currentScaleRef.current = scale;
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    if (emulatorContainerRef.current) {
-      applyScale(computeScale(emulatorContainerRef.current.getBoundingClientRect().width));
-    }
-  }, [applyScale]);
-
-  useEffect(() => {
-    const container = emulatorContainerRef.current;
-    if (!container) return;
-
-    // ⚡ Bolt: Bypassed React state for high-frequency ResizeObserver events and removed requestAnimationFrame.
-    // Impact: Completely eliminates React re-renders and virtual DOM diffing during
-    // window resizes by mutating the CSS transform and height properties directly
-    // on the DOM nodes via refs. Removing requestAnimationFrame prevents a 1-frame
-    // delay that causes visual lag during resize.
-    const observer = new ResizeObserver(([entry]) => {
-      applyScale(computeScale(entry.contentRect.width));
-    });
-
-    observer.observe(container);
-    return () => {
-      observer.disconnect();
-    };
-  }, [applyScale]);
-
   const handleStartOverlayActivate = () => {
     if (isScriptLoaded) {
       startEmulator();
@@ -71,20 +29,24 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
 
   return (
     <div
-      ref={emulatorContainerRef}
       style={{
         width: "100%",
         maxWidth: `${EMULATOR_WIDTH}px`,
-        height: `${EMULATOR_HEIGHT}px`, // Initial height, updated via ref
+        aspectRatio: `${EMULATOR_WIDTH} / ${EMULATOR_HEIGHT}`,
+        containerType: "inline-size",
         overflow: "hidden",
         minWidth: 0,
         marginTop: "1rem",
       }}
     >
       <div
-        ref={scaledContainerRef}
         style={{
-          transform: `scale(1)`, // Initial scale, updated via ref
+          // ⚡ Bolt: Replaced ResizeObserver with pure CSS container queries.
+          // Impact: Eliminates JavaScript execution during window resize entirely.
+          // The browser natively handles the scaling calculations via `cqw` units,
+          // removing observer overhead, improving scrolling/resizing smoothness,
+          // and reducing React component complexity.
+          transform: `scale(min(1, 100cqw / ${EMULATOR_WIDTH}px))`,
           transformOrigin: "top left",
           // ⚡ Bolt: Promoted the scaled container to a hardware-accelerated layer.
           // Impact: Offloads dynamic scaling of the active JSSpeccy canvas during window resize

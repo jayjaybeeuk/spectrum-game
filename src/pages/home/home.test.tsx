@@ -5,12 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Home from "./home";
 import { GAMES } from "./games";
 
-class ResizeObserverMock {
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
-}
-
 const renderHome = () =>
   render(
     <ChakraProvider>
@@ -20,7 +14,6 @@ const renderHome = () =>
 
 describe("Home", () => {
   beforeEach(() => {
-    vi.stubGlobal("ResizeObserver", ResizeObserverMock);
     delete window.JSSpeccy;
   });
 
