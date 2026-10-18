@@ -1,4 +1,4 @@
-import { useRef, useState, memo, useCallback, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, memo, useCallback, useDeferredValue, type ChangeEvent, type RefObject } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -150,9 +150,16 @@ const Home = () => {
   const selectedGame = findGame(selectedOption) ?? DEFAULT_GAME;
   const selectedGameUrl = getGameUrl(selectedGame.file);
 
+  // ⚡ Bolt: Deferred the game URL used to load the emulator.
+  // Impact: Prevents rapid successive WASM teardowns and initializations when a user
+  // quickly scrolls through the dropdown options (e.g., holding arrow keys).
+  // React will batch these rapid state updates and only execute the heavy emulator
+  // restart effect for the final selected URL, eliminating main-thread freezing.
+  const deferredGameUrl = useDeferredValue(selectedGameUrl);
+
   const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
     jssSpeccyRef,
-    selectedGameUrl
+    deferredGameUrl
   );
 
   // ⚡ Bolt: Wrapped handleOptionChange in useCallback.
