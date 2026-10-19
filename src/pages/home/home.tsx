@@ -1,4 +1,4 @@
-import { useRef, useState, memo, useCallback, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, memo, useCallback, useDeferredValue, type ChangeEvent, type RefObject } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -147,7 +147,14 @@ const Home = () => {
   const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
 
-  const selectedGame = findGame(selectedOption) ?? DEFAULT_GAME;
+  // ⚡ Bolt: Defer updates to the selected option for heavy downstream processing.
+  // Impact: Prevents heavy WASM emulator initialization (inside useLoadJSSpeccy) and UI
+  // reconciliation from freezing the main thread when a user rapidly scrolls through
+  // the dropdown options (e.g. using arrow keys). The Dropdown continues to use the
+  // un-deferred selectedOption to maintain immediate visual responsiveness.
+  const deferredSelectedOption = useDeferredValue(selectedOption);
+
+  const selectedGame = findGame(deferredSelectedOption) ?? DEFAULT_GAME;
   const selectedGameUrl = getGameUrl(selectedGame.file);
 
   const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
@@ -176,7 +183,7 @@ const Home = () => {
       />
 
       <GameInfo
-        selectedOption={selectedOption}
+        selectedOption={deferredSelectedOption}
         selectedGameUrl={selectedGameUrl}
         selectedGameName={selectedGame.name}
       />
