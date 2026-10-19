@@ -20,3 +20,7 @@
 ## 2024-05-18 - Replacing ResizeObserver with Pure CSS Container Queries
 **Learning:** Using JavaScript `ResizeObserver` to apply CSS transforms like scaling for proportional elements causes unnecessary React lifecycle/rendering overhead and can lead to a 1-frame visual lag. Modern CSS container queries (`containerType: "inline-size"`) with `cqw` math natively handle this flawlessly without running any JavaScript.
 **Action:** When a DOM element needs to scale proportionally relative to its container's width, default to CSS `aspectRatio`, `containerType: "inline-size"`, and `transform: scale(...)` with `cqw` units instead of reaching for `ResizeObserver`.
+
+## 2025-03-05 - Deferred Heavy Initialization on Rapid State Updates
+**Learning:** When a UI component updates state rapidly (like a dropdown menu traversed with arrow keys), synchronous reactions that perform heavy work (like loading a WASM emulator or complex object lookups) can block the main thread and freeze the UI.
+**Action:** Use React 18's `useDeferredValue` on the rapidly changing state to decouple the urgent UI updates from the heavy side-effects, allowing the browser to keep the interface perfectly responsive while batching/delaying the expensive work.
