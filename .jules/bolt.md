@@ -24,3 +24,7 @@
 ## 2025-03-05 - Deferred Heavy Initialization on Rapid State Updates
 **Learning:** When a UI component updates state rapidly (like a dropdown menu traversed with arrow keys), synchronous reactions that perform heavy work (like loading a WASM emulator or complex object lookups) can block the main thread and freeze the UI.
 **Action:** Use React 18's `useDeferredValue` on the rapidly changing state to decouple the urgent UI updates from the heavy side-effects, allowing the browser to keep the interface perfectly responsive while batching/delaying the expensive work.
+
+## 2024-05-30 - Lazy evaluate `isScriptLoaded` for window.JSSpeccy
+**Learning:** Initializing `useState` with `false` when a global object might already be loaded (e.g. `window.JSSpeccy`) and then updating it to `true` in a `useEffect` causes an immediate, unnecessary React re-render of the entire component tree holding the emulator. Since users might navigate or have the script already loaded via another mechanism, the first mount pays a penalty.
+**Action:** Always lazily initialize such states using a function in `useState(() => typeof window !== "undefined" && !!window.JSSpeccy)` to avoid initial paint layout thrashing.

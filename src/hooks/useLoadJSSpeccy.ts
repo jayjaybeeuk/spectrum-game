@@ -26,7 +26,12 @@ const JSSPECCY_SCRIPT_SRC = "/jsspeccy/jsspeccy.js";
 
 const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
   const emu = useRef<Emulator | null>(null);
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  // ⚡ Bolt: Lazily initialize isScriptLoaded to avoid initial re-render.
+  // Impact: Prevents an unnecessary re-render of the component when the hook
+  // is mounted and JSSpeccy is already loaded on the window.
+  const [isScriptLoaded, setIsScriptLoaded] = useState(
+    () => typeof window !== "undefined" && !!window.JSSpeccy
+  );
   const [isStarted, setIsStarted] = useState(false);
 
   const openUrlRef = useRef(openUrl);
