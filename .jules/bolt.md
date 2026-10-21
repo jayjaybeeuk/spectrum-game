@@ -28,3 +28,7 @@
 ## 2024-05-30 - Lazy evaluate `isScriptLoaded` for window.JSSpeccy
 **Learning:** Initializing `useState` with `false` when a global object might already be loaded (e.g. `window.JSSpeccy`) and then updating it to `true` in a `useEffect` causes an immediate, unnecessary React re-render of the entire component tree holding the emulator. Since users might navigate or have the script already loaded via another mechanism, the first mount pays a penalty.
 **Action:** Always lazily initialize such states using a function in `useState(() => typeof window !== "undefined" && !!window.JSSpeccy)` to avoid initial paint layout thrashing.
+
+## 2025-03-05 - Preloading WASM for Web Workers
+**Learning:** Loading WASM inside a Web Worker creates a deep network waterfall: HTML -> App JS -> Emulator JS -> Worker JS -> WASM, delaying emulator startup.
+**Action:** When a critical Web Worker depends on WASM, use `<link rel="preload" href="..." as="fetch" type="application/wasm" crossorigin />` in `index.html` to parallelize the WASM download with the initial bundle fetch.
