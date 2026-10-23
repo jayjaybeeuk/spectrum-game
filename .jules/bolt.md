@@ -32,3 +32,7 @@
 ## 2025-03-05 - Preloading WASM for Web Workers
 **Learning:** Loading WASM inside a Web Worker creates a deep network waterfall: HTML -> App JS -> Emulator JS -> Worker JS -> WASM, delaying emulator startup.
 **Action:** When a critical Web Worker depends on WASM, use `<link rel="preload" href="..." as="fetch" type="application/wasm" crossorigin />` in `index.html` to parallelize the WASM download with the initial bundle fetch.
+
+## 2025-03-05 - Avoid fetching lazy chunks for components that render null based on local storage
+**Learning:** If a lazy-loaded component mounts, reads localStorage, and immediately returns `null` because the user already completed the action (like a consent banner), the browser still has to download and parse the chunk.
+**Action:** When a lazy component's visibility depends on a simple synchronous check (like a localStorage key), read that value in the parent before rendering the lazy component to prevent unnecessary network requests and JS parsing for returning users.

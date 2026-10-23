@@ -4,7 +4,7 @@ export type ConsentStatus = "granted" | "denied";
 
 export const CONSENT_STORAGE_KEY = "spectrum-game:analytics-consent";
 
-const readStoredConsent = (): ConsentStatus | null => {
+export const readStoredConsent = (): ConsentStatus | null => {
   try {
     const value = window.localStorage.getItem(CONSENT_STORAGE_KEY);
     return value === "granted" || value === "denied" ? value : null;
