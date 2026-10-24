@@ -7,6 +7,8 @@
     <link rel="preload" href="/jsspeccy/jsspeccy.js" as="script" />
     <!-- ⚡ Bolt: Preload WASM file to eliminate deep network waterfall -->
     <link rel="preload" href="/jsspeccy/jsspeccy-core.wasm" as="fetch" type="application/wasm" crossorigin />
+    <!-- ⚡ Bolt: Preload default game tape to parallelize fetch with WASM and JS -->
+    <link rel="preload" href="/games/helloworld.tap" as="fetch" crossorigin />
     <title>James' Spectrum Games</title>
   </head>
   <body>
