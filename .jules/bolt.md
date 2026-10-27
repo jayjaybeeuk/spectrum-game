@@ -36,3 +36,6 @@
 ## 2025-03-05 - Avoid fetching lazy chunks for components that render null based on local storage
 **Learning:** If a lazy-loaded component mounts, reads localStorage, and immediately returns `null` because the user already completed the action (like a consent banner), the browser still has to download and parse the chunk.
 **Action:** When a lazy component's visibility depends on a simple synchronous check (like a localStorage key), read that value in the parent before rendering the lazy component to prevent unnecessary network requests and JS parsing for returning users.
+## 2025-03-05 - Avoid synchronous disk reads when feature is disabled
+**Learning:** Using a function reference directly in `useState` (e.g. `useState(readStoredConsent)`) causes React to execute the function on the initial render unconditionally. If this function performs a synchronous disk read (like `localStorage.getItem`), it wastes valuable main-thread time if the feature relying on that state (like analytics) is disabled.
+**Action:** When initializing state with an expensive synchronous operation that depends on a feature flag, use an inline lazy initializer callback to conditionally execute the operation (e.g. `useState(() => analyticsEnabled ? readStoredConsent() : null)`). This completely bypasses the disk read when the feature is disabled.
