@@ -11,10 +11,12 @@ import "./App.css";
 const CookieConsent = lazy(() => import("./components/cookie-consent/cookie-consent").then(m => ({ default: m.CookieConsent })));
 
 function App() {
-  // ⚡ Bolt: Check consent synchronously before render to avoid downloading the chunk for returning users.
-  // We use useState to hold the initial value so we don't read from localStorage on every render.
-  const [initialConsent] = useState(readStoredConsent);
   const analyticsEnabled = isAnalyticsEnabled();
+
+  // ⚡ Bolt: Check consent synchronously before render to avoid downloading the chunk for returning users.
+  // We use a lazy initializer in useState to only read from localStorage if analytics is actually enabled,
+  // preventing synchronous blocking disk I/O on the main thread in environments where it's disabled.
+  const [initialConsent] = useState(() => (analyticsEnabled ? readStoredConsent() : null));
 
   useEffect(() => {
     if (analyticsEnabled && initialConsent === "granted") {
