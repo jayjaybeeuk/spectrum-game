@@ -40,3 +40,7 @@
 ## 2026-10-28 - Conditional Lazy Initialization of synchronous IO
 **Learning:** Calling synchronous disk I/O like `localStorage.getItem` directly in `useState(readStoredConsent)` causes blocking operations on the main thread during component initialization, even if the result isn't needed (e.g. when analytics is disabled).
 **Action:** Always wrap synchronous disk I/O (like reading local storage) in a conditional lazy initializer `useState(() => isEnabled ? readStorage() : null)` to avoid synchronous blocking of the main thread during initial load when the value is not needed.
+
+## 2023-10-30 - State Colocation to Prevent Parent Re-renders
+**Learning:** Initializing hooks like `useLoadJSSpeccy` in a parent component (`Home.tsx`) causes the parent to re-render whenever the emulator's state changes (e.g., when the script finishes loading or the emulator starts).
+**Action:** Colocate emulator-specific state and hooks inside the component that actually uses them (like `ScaledEmulatorContainer`). This pushes state updates down the tree, preventing unnecessary re-renders of the parent and its other children.
