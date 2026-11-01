@@ -44,3 +44,7 @@
 ## 2023-10-30 - State Colocation to Prevent Parent Re-renders
 **Learning:** Initializing hooks like `useLoadJSSpeccy` in a parent component (`Home.tsx`) causes the parent to re-render whenever the emulator's state changes (e.g., when the script finishes loading or the emulator starts).
 **Action:** Colocate emulator-specific state and hooks inside the component that actually uses them (like `ScaledEmulatorContainer`). This pushes state updates down the tree, preventing unnecessary re-renders of the parent and its other children.
+
+## 2025-03-05 - Preloading Web Worker Scripts
+**Learning:** Initializing an emulator that relies on a Web Worker dynamically (e.g., via `new Worker('worker.js')`) creates a deep network waterfall: the browser waits for the main script to load, execute, and call the constructor before it even begins fetching the worker script.
+**Action:** When a critical Web Worker is loaded dynamically, use `<link rel="preload" href="..." as="script" />` in `index.html` to parallelize the worker's download with the initial HTML payload, significantly reducing initialization time.
