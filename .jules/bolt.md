@@ -48,3 +48,7 @@
 ## 2025-03-05 - Preloading Web Worker Scripts
 **Learning:** Initializing an emulator that relies on a Web Worker dynamically (e.g., via `new Worker('worker.js')`) creates a deep network waterfall: the browser waits for the main script to load, execute, and call the constructor before it even begins fetching the worker script.
 **Action:** When a critical Web Worker is loaded dynamically, use `<link rel="preload" href="..." as="script" />` in `index.html` to parallelize the worker's download with the initial HTML payload, significantly reducing initialization time.
+
+## 2025-03-05 - Preloading critical ROM files to avoid network waterfalls
+**Learning:** JSSpeccy fetches default 128K ROMs (`128-0.rom` and `128-1.rom`) asynchronously via `fetch` upon initialization. Because these are triggered by JS execution after the script loads, it creates a network waterfall delaying emulator startup.
+**Action:** Always inspect external emulator startup routines for data file fetches. Preload these critical initialization files in `index.html` using `<link rel="preload" as="fetch" crossorigin />` to fetch them in parallel with the main JS bundles.
