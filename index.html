@@ -9,6 +9,9 @@
     <link rel="preload" href="/jsspeccy/jsspeccy-worker.js" as="script" />
     <!-- ⚡ Bolt: Preload WASM file to eliminate deep network waterfall -->
     <link rel="preload" href="/jsspeccy/jsspeccy-core.wasm" as="fetch" type="application/wasm" crossorigin />
+    <!-- ⚡ Bolt: Preload default ROM files to eliminate deep network waterfall -->
+    <link rel="preload" href="/jsspeccy/roms/128-0.rom" as="fetch" crossorigin />
+    <link rel="preload" href="/jsspeccy/roms/128-1.rom" as="fetch" crossorigin />
     <!-- ⚡ Bolt: Preload default game tape to eliminate deep network waterfall -->
     <link rel="preload" href="/games/helloworld.tap" as="fetch" crossorigin />
     <title>James' Spectrum Games</title>
