@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preload" href="/jsspeccy/jsspeccy.js" as="script" />
+    <!-- ⚡ Bolt: Execute JSSpeccy script asynchronously on initial load -->
+    <!-- Impact: Eliminates the React render-cycle delay from the emulator script execution timeline -->
+    <script src="/jsspeccy/jsspeccy.js" async></script>
     <!-- ⚡ Bolt: Preload Worker script to eliminate deep network waterfall -->
     <link rel="preload" href="/jsspeccy/jsspeccy-worker.js" as="script" />
     <!-- ⚡ Bolt: Preload WASM file to eliminate deep network waterfall -->
