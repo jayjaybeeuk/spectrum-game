@@ -52,3 +52,7 @@
 ## 2025-03-05 - Preloading critical ROM files to avoid network waterfalls
 **Learning:** JSSpeccy fetches default 128K ROMs (`128-0.rom` and `128-1.rom`) asynchronously via `fetch` upon initialization. Because these are triggered by JS execution after the script loads, it creates a network waterfall delaying emulator startup.
 **Action:** Always inspect external emulator startup routines for data file fetches. Preload these critical initialization files in `index.html` using `<link rel="preload" as="fetch" crossorigin />` to fetch them in parallel with the main JS bundles.
+
+## 2025-03-05 - In-Memory Caching for Synchronous Disk I/O
+**Learning:** Repeatedly calling `window.localStorage.getItem` for values that do not change (like consent state) across multiple component mounts introduces unnecessary synchronous disk I/O on the main thread, especially when components unmount and remount or multiple hooks independently read the same value.
+**Action:** When a value from `localStorage` is expected to remain constant during a session (except when explicitly changed by the app), cache the read result in a module-level variable. Ensure tests remain isolated by exposing a cache-clearing utility function.
