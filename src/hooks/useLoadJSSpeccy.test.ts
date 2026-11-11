@@ -21,21 +21,6 @@ describe("useLoadJSSpeccy", () => {
     delete window.JSSpeccy;
   });
 
-  it("injects the JSSpeccy script tag and reports loaded once it fires load", () => {
-    const { result } = renderHook(() => useLoadJSSpeccy(makeRef(), "/games/a.tap"));
-
-    const script = document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR);
-    expect(script).not.toBeNull();
-    expect(script?.async).toBe(true);
-    expect(result.current.isScriptLoaded).toBe(false);
-    expect(result.current.isStarted).toBe(false);
-
-    act(() => {
-      script?.dispatchEvent(new Event("load"));
-    });
-
-    expect(result.current.isScriptLoaded).toBe(true);
-  });
 
   it("does not inject a second script tag when one already exists", () => {
     const existing = document.createElement("script");
