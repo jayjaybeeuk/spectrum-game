@@ -56,3 +56,7 @@
 ## 2025-03-05 - In-Memory Caching for Synchronous Disk I/O
 **Learning:** Repeatedly calling `window.localStorage.getItem` for values that do not change (like consent state) across multiple component mounts introduces unnecessary synchronous disk I/O on the main thread, especially when components unmount and remount or multiple hooks independently read the same value.
 **Action:** When a value from `localStorage` is expected to remain constant during a session (except when explicitly changed by the app), cache the read result in a module-level variable. Ensure tests remain isolated by exposing a cache-clearing utility function.
+
+## 2025-03-05 - Native Script Tags over React Effect Injection for Critical Scripts
+**Learning:** Using React effects (`useEffect`) to dynamically inject a `<script>` tag for a critical dependency delays the script's execution because the browser must wait for the HTML to load, the main JS bundle to execute, the React tree to render, and the effect to finally trigger. Even preloading the script with `<link rel="preload">` doesn't fully eliminate the React render-cycle delay before execution.
+**Action:** For critical external scripts (like emulators) that are needed immediately, include them natively as `<script src="..." async></script>` directly in `index.html`. The browser will fetch and execute them asynchronously without being blocked by the React render cycle, improving Time To Interactive.
