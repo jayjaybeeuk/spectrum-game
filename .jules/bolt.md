@@ -64,3 +64,7 @@
 ## 2025-03-05 - ResizeObserver and requestAnimationFrame Anti-Pattern
 **Learning:** Wrapping a `ResizeObserver` callback in `requestAnimationFrame` is an anti-pattern when the goal is to keep layout changes in sync. `ResizeObserver` callbacks naturally fire *before* the browser paints the current frame. Wrapping the layout update in `requestAnimationFrame` defers the DOM changes to the *next* frame's paint cycle, causing a 1-frame visual desynchronization (jitter/lag) between the container's resize and the inner content's scaling.
 **Action:** When updating visual properties in a `ResizeObserver` callback to keep elements structurally in sync, execute the DOM mutations directly and synchronously within the callback to ensure they are painted in the same frame as the resize event.
+
+## 2024-04-12 - Deferring Heavy Side Effects During Rapid State Updates
+**Learning:** Changing component state that immediately triggers a heavy, synchronous side effect (like destroying and initializing a WASM emulator) causes severe main-thread blocking when the state is updated rapidly (e.g., holding an arrow key in a select dropdown).
+**Action:** Use `useDeferredValue` to decouple the rapid UI state updates from the value passed to the heavy side-effect hook. React will batch the deferred value updates, skipping intermediate states and only executing the heavy side effect for the final selected state, eliminating jank.
