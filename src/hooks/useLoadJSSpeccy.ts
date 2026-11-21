@@ -57,17 +57,6 @@ const useLoadJSSpeccy = (ref: RefObject<HTMLDivElement>, openUrl: string) => {
         existingScript.removeEventListener("load", onLoad);
       };
     }
-
-    const script = document.createElement("script");
-    script.src = JSSPECCY_SCRIPT_SRC;
-    script.async = true;
-    script.addEventListener("load", onLoad, { once: true });
-
-    document.body.appendChild(script);
-
-    return () => {
-      script.removeEventListener("load", onLoad);
-    };
   }, []);
 
   const initEmulator = (url: string) => {

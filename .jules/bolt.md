@@ -53,6 +53,30 @@
 **Learning:** JSSpeccy fetches default 128K ROMs (`128-0.rom` and `128-1.rom`) asynchronously via `fetch` upon initialization. Because these are triggered by JS execution after the script loads, it creates a network waterfall delaying emulator startup.
 **Action:** Always inspect external emulator startup routines for data file fetches. Preload these critical initialization files in `index.html` using `<link rel="preload" as="fetch" crossorigin />` to fetch them in parallel with the main JS bundles.
 
+## 2025-03-05 - In-Memory Caching for Synchronous Disk I/O
+**Learning:** Repeatedly calling `window.localStorage.getItem` for values that do not change (like consent state) across multiple component mounts introduces unnecessary synchronous disk I/O on the main thread, especially when components unmount and remount or multiple hooks independently read the same value.
+**Action:** When a value from `localStorage` is expected to remain constant during a session (except when explicitly changed by the app), cache the read result in a module-level variable. Ensure tests remain isolated by exposing a cache-clearing utility function.
+
+## 2025-03-05 - Native Script Tags over React Effect Injection for Critical Scripts
+**Learning:** Using React effects (`useEffect`) to dynamically inject a `<script>` tag for a critical dependency delays the script's execution because the browser must wait for the HTML to load, the main JS bundle to execute, the React tree to render, and the effect to finally trigger. Even preloading the script with `<link rel="preload">` doesn't fully eliminate the React render-cycle delay before execution.
+**Action:** For critical external scripts (like emulators) that are needed immediately, include them natively as `<script src="..." async></script>` directly in `index.html`. The browser will fetch and execute them asynchronously without being blocked by the React render cycle, improving Time To Interactive.
+
+## 2025-03-05 - ResizeObserver and requestAnimationFrame Anti-Pattern
+**Learning:** Wrapping a `ResizeObserver` callback in `requestAnimationFrame` is an anti-pattern when the goal is to keep layout changes in sync. `ResizeObserver` callbacks naturally fire *before* the browser paints the current frame. Wrapping the layout update in `requestAnimationFrame` defers the DOM changes to the *next* frame's paint cycle, causing a 1-frame visual desynchronization (jitter/lag) between the container's resize and the inner content's scaling.
+**Action:** When updating visual properties in a `ResizeObserver` callback to keep elements structurally in sync, execute the DOM mutations directly and synchronously within the callback to ensure they are painted in the same frame as the resize event.
+
+## 2024-04-12 - Deferring Heavy Side Effects During Rapid State Updates
+**Learning:** Changing component state that immediately triggers a heavy, synchronous side effect (like destroying and initializing a WASM emulator) causes severe main-thread blocking when the state is updated rapidly (e.g., holding an arrow key in a select dropdown).
+**Action:** Use `useDeferredValue` to decouple the rapid UI state updates from the value passed to the heavy side-effect hook. React will batch the deferred value updates, skipping intermediate states and only executing the heavy side effect for the final selected state, eliminating jank.
+
+## 2025-03-05 - Preloading Initial Content
+**Learning:** Initial content loaded by an application after boot (like a default game tape file) creates an additional network waterfall step (HTML -> JS -> App Boot -> Content Fetch) that delays time-to-interactive.
+**Action:** Use <link rel="preload" as="fetch" crossorigin /> in index.html for default files to parallelize their download with the application's initialization, eliminating the final waterfall step.
+
+## 2025-03-05 - Avoid synchronous disk reads when feature is disabled
+**Learning:** Using a function reference directly in `useState` (e.g. `useState(readStoredConsent)`) causes React to execute the function on the initial render unconditionally. If this function performs a synchronous disk read (like `localStorage.getItem`), it wastes valuable main-thread time if the feature relying on that state (like analytics) is disabled.
+**Action:** When initializing state with an expensive synchronous operation that depends on a feature flag, use an inline lazy initializer callback to conditionally execute the operation (e.g. `useState(() => analyticsEnabled ? readStoredConsent() : null)`). This completely bypasses the disk read when the feature is disabled.
+
 ## 2026-11-09 - Caching localStorage reads in memory
 **Learning:** Repeatedly reading from `localStorage` synchronously blocks the main thread. Even if a React state is initialized lazily via `useState`, subsequent mounts of components relying on that storage will trigger another read.
 **Action:** Cache the result of `localStorage.getItem` in a module-level variable to eliminate repeated synchronous disk I/O. Remember to export a cache clearing utility to ensure isolated tests in `vitest`.
