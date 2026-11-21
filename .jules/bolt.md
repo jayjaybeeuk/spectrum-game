@@ -68,3 +68,7 @@
 ## 2024-04-12 - Deferring Heavy Side Effects During Rapid State Updates
 **Learning:** Changing component state that immediately triggers a heavy, synchronous side effect (like destroying and initializing a WASM emulator) causes severe main-thread blocking when the state is updated rapidly (e.g., holding an arrow key in a select dropdown).
 **Action:** Use `useDeferredValue` to decouple the rapid UI state updates from the value passed to the heavy side-effect hook. React will batch the deferred value updates, skipping intermediate states and only executing the heavy side effect for the final selected state, eliminating jank.
+
+## 2025-03-05 - Preloading Initial Content
+**Learning:** Initial content loaded by an application after boot (like a default game tape file) creates an additional network waterfall step (HTML -> JS -> App Boot -> Content Fetch) that delays time-to-interactive.
+**Action:** Use <link rel="preload" as="fetch" crossorigin /> in index.html for default files to parallelize their download with the application's initialization, eliminating the final waterfall step.
