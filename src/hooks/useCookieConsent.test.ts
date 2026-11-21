@@ -1,10 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import useCookieConsent, { CONSENT_STORAGE_KEY } from "./useCookieConsent";
+import useCookieConsent, { CONSENT_STORAGE_KEY, clearConsentCache } from "./useCookieConsent";
 
 describe("useCookieConsent", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    clearConsentCache();
   });
 
   it("starts with no decision when nothing is stored", () => {
