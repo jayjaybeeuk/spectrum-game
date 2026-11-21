@@ -72,3 +72,7 @@
 ## 2025-03-05 - Preloading Initial Content
 **Learning:** Initial content loaded by an application after boot (like a default game tape file) creates an additional network waterfall step (HTML -> JS -> App Boot -> Content Fetch) that delays time-to-interactive.
 **Action:** Use <link rel="preload" as="fetch" crossorigin /> in index.html for default files to parallelize their download with the application's initialization, eliminating the final waterfall step.
+
+## 2025-03-05 - Avoid synchronous disk reads when feature is disabled
+**Learning:** Using a function reference directly in `useState` (e.g. `useState(readStoredConsent)`) causes React to execute the function on the initial render unconditionally. If this function performs a synchronous disk read (like `localStorage.getItem`), it wastes valuable main-thread time if the feature relying on that state (like analytics) is disabled.
+**Action:** When initializing state with an expensive synchronous operation that depends on a feature flag, use an inline lazy initializer callback to conditionally execute the operation (e.g. `useState(() => analyticsEnabled ? readStoredConsent() : null)`). This completely bypasses the disk read when the feature is disabled.
