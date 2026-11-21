@@ -1,7 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Home from "./pages";
 import { ChakraProvider } from "@chakra-ui/react";
-import { isAnalyticsEnabled } from "./analytics/clarity";
+import { isAnalyticsEnabled, initClarity } from "./analytics/clarity";
+import { readStoredConsent } from "./hooks/useCookieConsent";
 import "./App.css";
 
 // ⚡ Bolt: Lazily load the CookieConsent component.
@@ -10,11 +11,26 @@ import "./App.css";
 const CookieConsent = lazy(() => import("./components/cookie-consent/cookie-consent").then(m => ({ default: m.CookieConsent })));
 
 function App() {
+  const analyticsEnabled = isAnalyticsEnabled();
+
+  // ⚡ Bolt: Check consent synchronously before render to avoid downloading the chunk for returning users.
+  // We use a lazy initializer in useState to only read from localStorage if analytics is actually enabled,
+  // preventing synchronous blocking disk I/O on the main thread in environments where it's disabled.
+  const [initialConsent] = useState(() => (analyticsEnabled ? readStoredConsent() : null));
+
+  useEffect(() => {
+    if (analyticsEnabled && initialConsent === "granted") {
+      initClarity();
+    }
+  }, [analyticsEnabled, initialConsent]);
+
+  // ⚡ Bolt: Only render (and fetch) the CookieConsent chunk if the user hasn't made a choice yet.
+  const needsConsent = analyticsEnabled && initialConsent === null;
+
   return (
     <ChakraProvider>
       <Home />
-      {/* ⚡ Bolt: Only attempt to load the component if analytics are enabled. */}
-      {isAnalyticsEnabled() && (
+      {needsConsent && (
         <Suspense fallback={null}>
           <CookieConsent />
         </Suspense>

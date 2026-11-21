@@ -1,4 +1,4 @@
-import { useRef, useState, memo, useCallback, useDeferredValue, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, memo, useCallback, useDeferredValue, type ChangeEvent } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -11,16 +11,21 @@ const EMULATOR_WIDTH = 640;
 const EMULATOR_HEIGHT = 480;
 
 interface ScaledEmulatorContainerProps {
-  jssSpeccyRef: RefObject<HTMLDivElement>;
-  isStarted: boolean;
-  isScriptLoaded: boolean;
-  startEmulator: () => void;
+  selectedGameUrl: string;
 }
 
 // ⚡ Bolt: Wrapped ScaledEmulatorContainer in React.memo().
 // Impact: Prevents the entire emulator container and overlay from re-rendering
 // unnecessarily when the user selects a different game from the dropdown.
-const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
+// ⚡ Bolt: Colocated emulator state inside ScaledEmulatorContainer.
+// Impact: Prevents the parent Home component from re-rendering when the emulator script loads
+// or when the emulator starts, reducing unnecessary React rendering overhead.
+const ScaledEmulatorContainer = memo(({ selectedGameUrl }: ScaledEmulatorContainerProps) => {
+  const jssSpeccyRef = useRef<HTMLDivElement>(null);
+  const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
+    jssSpeccyRef,
+    selectedGameUrl
+  );
   const handleStartOverlayActivate = () => {
     if (isScriptLoaded) {
       startEmulator();
@@ -144,23 +149,17 @@ const GameInfo = memo(({ selectedOption, selectedGameUrl, selectedGameName }: Ga
 });
 
 const Home = () => {
-  const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
 
-  const selectedGame = findGame(selectedOption) ?? DEFAULT_GAME;
+  // ⚡ Bolt: Defer updates to the selected option for heavy downstream processing.
+  // Impact: Prevents heavy WASM emulator initialization (inside useLoadJSSpeccy) and UI
+  // reconciliation from freezing the main thread when a user rapidly scrolls through
+  // the dropdown options (e.g. using arrow keys). The Dropdown continues to use the
+  // un-deferred selectedOption to maintain immediate visual responsiveness.
+  const deferredSelectedOption = useDeferredValue(selectedOption);
+
+  const selectedGame = findGame(deferredSelectedOption) ?? DEFAULT_GAME;
   const selectedGameUrl = getGameUrl(selectedGame.file);
-
-  // ⚡ Bolt: Deferred the game URL used to load the emulator.
-  // Impact: Prevents rapid successive WASM teardowns and initializations when a user
-  // quickly scrolls through the dropdown options (e.g., holding arrow keys).
-  // React will batch these rapid state updates and only execute the heavy emulator
-  // restart effect for the final selected URL, eliminating main-thread freezing.
-  const deferredGameUrl = useDeferredValue(selectedGameUrl);
-
-  const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
-    jssSpeccyRef,
-    deferredGameUrl
-  );
 
   // ⚡ Bolt: Wrapped handleOptionChange in useCallback.
   // Impact: Maintains a stable reference for the handleChange prop, which enables
@@ -176,14 +175,11 @@ const Home = () => {
       </Dropdown>
 
       <ScaledEmulatorContainer
-        jssSpeccyRef={jssSpeccyRef}
-        isStarted={isStarted}
-        isScriptLoaded={isScriptLoaded}
-        startEmulator={startEmulator}
+        selectedGameUrl={selectedGameUrl}
       />
 
       <GameInfo
-        selectedOption={selectedOption}
+        selectedOption={deferredSelectedOption}
         selectedGameUrl={selectedGameUrl}
         selectedGameName={selectedGame.name}
       />
