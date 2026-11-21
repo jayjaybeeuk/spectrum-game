@@ -14,9 +14,9 @@ function App() {
   const analyticsEnabled = isAnalyticsEnabled();
 
   // ⚡ Bolt: Check consent synchronously before render to avoid downloading the chunk for returning users.
-  // We use a lazy initializer in useState to only read from localStorage if analytics are enabled,
-  // preventing a synchronous blocking disk read on initial load when analytics are disabled.
-  const [initialConsent] = useState(() => analyticsEnabled ? readStoredConsent() : null);
+  // We use a lazy initializer in useState to only read from localStorage if analytics is actually enabled,
+  // preventing synchronous blocking disk I/O on the main thread in environments where it's disabled.
+  const [initialConsent] = useState(() => (analyticsEnabled ? readStoredConsent() : null));
 
   useEffect(() => {
     if (analyticsEnabled && initialConsent === "granted") {

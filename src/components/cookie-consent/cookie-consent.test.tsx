@@ -2,7 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CONSENT_STORAGE_KEY } from "../../hooks/useCookieConsent";
+import { CONSENT_STORAGE_KEY, clearConsentCache } from "../../hooks/useCookieConsent";
 
 // clarity.ts reads import.meta.env at module load, so stub env before importing.
 const loadComponent = async () => {
@@ -19,6 +19,7 @@ const CLARITY_SCRIPT = "script#ms-clarity";
 describe("CookieConsent", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    clearConsentCache();
   });
 
   afterEach(() => {
