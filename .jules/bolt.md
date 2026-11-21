@@ -76,3 +76,7 @@
 ## 2025-03-05 - Avoid synchronous disk reads when feature is disabled
 **Learning:** Using a function reference directly in `useState` (e.g. `useState(readStoredConsent)`) causes React to execute the function on the initial render unconditionally. If this function performs a synchronous disk read (like `localStorage.getItem`), it wastes valuable main-thread time if the feature relying on that state (like analytics) is disabled.
 **Action:** When initializing state with an expensive synchronous operation that depends on a feature flag, use an inline lazy initializer callback to conditionally execute the operation (e.g. `useState(() => analyticsEnabled ? readStoredConsent() : null)`). This completely bypasses the disk read when the feature is disabled.
+
+## 2026-11-09 - Caching localStorage reads in memory
+**Learning:** Repeatedly reading from `localStorage` synchronously blocks the main thread. Even if a React state is initialized lazily via `useState`, subsequent mounts of components relying on that storage will trigger another read.
+**Action:** Cache the result of `localStorage.getItem` in a module-level variable to eliminate repeated synchronous disk I/O. Remember to export a cache clearing utility to ensure isolated tests in `vitest`.
