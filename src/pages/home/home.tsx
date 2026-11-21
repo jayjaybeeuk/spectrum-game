@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect, memo, useCallback, type ChangeEvent, type RefObject } from "react";
+import { useRef, useState, memo, useCallback, useDeferredValue, type ChangeEvent } from "react";
 import { Dropdown, DownloadLink } from "../../components";
 import useLoadJSSpeccy from "../../hooks/useLoadJSSpeccy";
 import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
@@ -10,62 +10,22 @@ import { GAMES, DEFAULT_GAME, findGame, getGameUrl } from "./games";
 const EMULATOR_WIDTH = 640;
 const EMULATOR_HEIGHT = 480;
 
-const computeScale = (containerWidth: number) =>
-  Math.min(1, containerWidth / EMULATOR_WIDTH);
-
 interface ScaledEmulatorContainerProps {
-  jssSpeccyRef: RefObject<HTMLDivElement>;
-  isStarted: boolean;
-  isScriptLoaded: boolean;
-  startEmulator: () => void;
+  selectedGameUrl: string;
 }
 
 // ⚡ Bolt: Wrapped ScaledEmulatorContainer in React.memo().
 // Impact: Prevents the entire emulator container and overlay from re-rendering
 // unnecessarily when the user selects a different game from the dropdown.
-const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded, startEmulator }: ScaledEmulatorContainerProps) => {
-  const emulatorContainerRef = useRef<HTMLDivElement>(null);
-  const scaledContainerRef = useRef<HTMLDivElement>(null);
-  const currentScaleRef = useRef<number | null>(null);
-
-  const applyScale = useCallback((scale: number) => {
-    if (currentScaleRef.current === scale) return;
-
-    if (emulatorContainerRef.current && scaledContainerRef.current) {
-      emulatorContainerRef.current.style.height = `${EMULATOR_HEIGHT * scale}px`;
-      scaledContainerRef.current.style.transform = `scale(${scale})`;
-      currentScaleRef.current = scale;
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    if (emulatorContainerRef.current) {
-      applyScale(computeScale(emulatorContainerRef.current.getBoundingClientRect().width));
-    }
-  }, [applyScale]);
-
-  useEffect(() => {
-    const container = emulatorContainerRef.current;
-    if (!container) return;
-
-    // ⚡ Bolt: Bypassed React state for high-frequency ResizeObserver events.
-    // Impact: Completely eliminates React re-renders and virtual DOM diffing during
-    // window resizes by mutating the CSS transform and height properties directly
-    // on the DOM nodes via refs. This drops render cycles per frame to 0, massively
-    // reducing main-thread blocking time on resize.
-    const observer = new ResizeObserver(([entry]) => {
-      // ⚡ Bolt: Removed requestAnimationFrame delay from ResizeObserver.
-      // Impact: ResizeObserver natively runs before paint. Delaying via rAF pushes
-      // the DOM update to the next frame, causing 1-frame visual layout jitter.
-      applyScale(computeScale(entry.contentRect.width));
-    });
-
-    observer.observe(container);
-    return () => {
-      observer.disconnect();
-    };
-  }, [applyScale]);
-
+// ⚡ Bolt: Colocated emulator state inside ScaledEmulatorContainer.
+// Impact: Prevents the parent Home component from re-rendering when the emulator script loads
+// or when the emulator starts, reducing unnecessary React rendering overhead.
+const ScaledEmulatorContainer = memo(({ selectedGameUrl }: ScaledEmulatorContainerProps) => {
+  const jssSpeccyRef = useRef<HTMLDivElement>(null);
+  const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
+    jssSpeccyRef,
+    selectedGameUrl
+  );
   const handleStartOverlayActivate = () => {
     if (isScriptLoaded) {
       startEmulator();
@@ -74,20 +34,24 @@ const ScaledEmulatorContainer = memo(({ jssSpeccyRef, isStarted, isScriptLoaded,
 
   return (
     <div
-      ref={emulatorContainerRef}
       style={{
         width: "100%",
         maxWidth: `${EMULATOR_WIDTH}px`,
-        height: `${EMULATOR_HEIGHT}px`, // Initial height, updated via ref
+        aspectRatio: `${EMULATOR_WIDTH} / ${EMULATOR_HEIGHT}`,
+        containerType: "inline-size",
         overflow: "hidden",
         minWidth: 0,
         marginTop: "1rem",
       }}
     >
       <div
-        ref={scaledContainerRef}
         style={{
-          transform: `scale(1)`, // Initial scale, updated via ref
+          // ⚡ Bolt: Replaced ResizeObserver with pure CSS container queries.
+          // Impact: Eliminates JavaScript execution during window resize entirely.
+          // The browser natively handles the scaling calculations via `cqw` units,
+          // removing observer overhead, improving scrolling/resizing smoothness,
+          // and reducing React component complexity.
+          transform: `scale(min(1, 100cqw / ${EMULATOR_WIDTH}px))`,
           transformOrigin: "top left",
           // ⚡ Bolt: Promoted the scaled container to a hardware-accelerated layer.
           // Impact: Offloads dynamic scaling of the active JSSpeccy canvas during window resize
@@ -185,16 +149,17 @@ const GameInfo = memo(({ selectedOption, selectedGameUrl, selectedGameName }: Ga
 });
 
 const Home = () => {
-  const jssSpeccyRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState(DEFAULT_GAME.file);
 
-  const selectedGame = findGame(selectedOption) ?? DEFAULT_GAME;
-  const selectedGameUrl = getGameUrl(selectedGame.file);
+  // ⚡ Bolt: Defer updates to the selected option for heavy downstream processing.
+  // Impact: Prevents heavy WASM emulator initialization (inside useLoadJSSpeccy) and UI
+  // reconciliation from freezing the main thread when a user rapidly scrolls through
+  // the dropdown options (e.g. using arrow keys). The Dropdown continues to use the
+  // un-deferred selectedOption to maintain immediate visual responsiveness.
+  const deferredSelectedOption = useDeferredValue(selectedOption);
 
-  const { isScriptLoaded, isStarted, startEmulator } = useLoadJSSpeccy(
-    jssSpeccyRef,
-    selectedGameUrl
-  );
+  const selectedGame = findGame(deferredSelectedOption) ?? DEFAULT_GAME;
+  const selectedGameUrl = getGameUrl(selectedGame.file);
 
   // ⚡ Bolt: Wrapped handleOptionChange in useCallback.
   // Impact: Maintains a stable reference for the handleChange prop, which enables
@@ -210,14 +175,11 @@ const Home = () => {
       </Dropdown>
 
       <ScaledEmulatorContainer
-        jssSpeccyRef={jssSpeccyRef}
-        isStarted={isStarted}
-        isScriptLoaded={isScriptLoaded}
-        startEmulator={startEmulator}
+        selectedGameUrl={selectedGameUrl}
       />
 
       <GameInfo
-        selectedOption={selectedOption}
+        selectedOption={deferredSelectedOption}
         selectedGameUrl={selectedGameUrl}
         selectedGameName={selectedGame.name}
       />

@@ -13,6 +13,54 @@
 ## 2024-10-14 - JSSpeccy Teardown DOM Accumulation
 **Learning:** JSSpeccy's `exit()` method stops the emulator but fails to tear down its injected DOM elements (like the canvas). This causes old canvases to accumulate indefinitely in the DOM every time a new game is loaded, eventually leading to performance degradation and memory leaks.
 **Action:** When working with 3rd-party emulators like JSSpeccy in React, explicitly clear the container's `innerHTML` during the teardown phase (after calling exit/destroy) before a new instance is created.
+## 2025-03-05 - Avoid requestAnimationFrame in ResizeObserver with Direct DOM Mutation
+**Learning:** Using `requestAnimationFrame` inside a `ResizeObserver` delays the layout update by one frame. If the observer is tracking a container whose width is managed by the browser (like flex/grid/percentage layouts), the browser updates the container width immediately, but the scale (managed by `requestAnimationFrame`) updates on the next frame. This 1-frame offset creates a noticeable visual jitter/lag during resizing. Since the DOM updates in `applyScale` already check a cached `currentScaleRef` to avoid redundant DOM writes, `requestAnimationFrame` is unnecessary and actively harmful to visual smoothness.
+**Action:** When updating DOM properties inside a `ResizeObserver` by mutating refs directly and using caching to avoid redundant writes, do not wrap the update in `requestAnimationFrame`. Let the `ResizeObserver` naturally batch the updates within the same render cycle for smooth scaling.
+
+## 2024-05-18 - Replacing ResizeObserver with Pure CSS Container Queries
+**Learning:** Using JavaScript `ResizeObserver` to apply CSS transforms like scaling for proportional elements causes unnecessary React lifecycle/rendering overhead and can lead to a 1-frame visual lag. Modern CSS container queries (`containerType: "inline-size"`) with `cqw` math natively handle this flawlessly without running any JavaScript.
+**Action:** When a DOM element needs to scale proportionally relative to its container's width, default to CSS `aspectRatio`, `containerType: "inline-size"`, and `transform: scale(...)` with `cqw` units instead of reaching for `ResizeObserver`.
+
+## 2025-03-05 - Deferred Heavy Initialization on Rapid State Updates
+**Learning:** When a UI component updates state rapidly (like a dropdown menu traversed with arrow keys), synchronous reactions that perform heavy work (like loading a WASM emulator or complex object lookups) can block the main thread and freeze the UI.
+**Action:** Use React 18's `useDeferredValue` on the rapidly changing state to decouple the urgent UI updates from the heavy side-effects, allowing the browser to keep the interface perfectly responsive while batching/delaying the expensive work.
+
+## 2024-05-30 - Lazy evaluate `isScriptLoaded` for window.JSSpeccy
+**Learning:** Initializing `useState` with `false` when a global object might already be loaded (e.g. `window.JSSpeccy`) and then updating it to `true` in a `useEffect` causes an immediate, unnecessary React re-render of the entire component tree holding the emulator. Since users might navigate or have the script already loaded via another mechanism, the first mount pays a penalty.
+**Action:** Always lazily initialize such states using a function in `useState(() => typeof window !== "undefined" && !!window.JSSpeccy)` to avoid initial paint layout thrashing.
+
+## 2025-03-05 - Preloading WASM for Web Workers
+**Learning:** Loading WASM inside a Web Worker creates a deep network waterfall: HTML -> App JS -> Emulator JS -> Worker JS -> WASM, delaying emulator startup.
+**Action:** When a critical Web Worker depends on WASM, use `<link rel="preload" href="..." as="fetch" type="application/wasm" crossorigin />` in `index.html` to parallelize the WASM download with the initial bundle fetch.
+
+## 2025-03-05 - Avoid fetching lazy chunks for components that render null based on local storage
+**Learning:** If a lazy-loaded component mounts, reads localStorage, and immediately returns `null` because the user already completed the action (like a consent banner), the browser still has to download and parse the chunk.
+**Action:** When a lazy component's visibility depends on a simple synchronous check (like a localStorage key), read that value in the parent before rendering the lazy component to prevent unnecessary network requests and JS parsing for returning users.
+
+## 2026-10-28 - Conditional Lazy Initialization of synchronous IO
+**Learning:** Calling synchronous disk I/O like `localStorage.getItem` directly in `useState(readStoredConsent)` causes blocking operations on the main thread during component initialization, even if the result isn't needed (e.g. when analytics is disabled).
+**Action:** Always wrap synchronous disk I/O (like reading local storage) in a conditional lazy initializer `useState(() => isEnabled ? readStorage() : null)` to avoid synchronous blocking of the main thread during initial load when the value is not needed.
+
+## 2023-10-30 - State Colocation to Prevent Parent Re-renders
+**Learning:** Initializing hooks like `useLoadJSSpeccy` in a parent component (`Home.tsx`) causes the parent to re-render whenever the emulator's state changes (e.g., when the script finishes loading or the emulator starts).
+**Action:** Colocate emulator-specific state and hooks inside the component that actually uses them (like `ScaledEmulatorContainer`). This pushes state updates down the tree, preventing unnecessary re-renders of the parent and its other children.
+
+## 2025-03-05 - Preloading Web Worker Scripts
+**Learning:** Initializing an emulator that relies on a Web Worker dynamically (e.g., via `new Worker('worker.js')`) creates a deep network waterfall: the browser waits for the main script to load, execute, and call the constructor before it even begins fetching the worker script.
+**Action:** When a critical Web Worker is loaded dynamically, use `<link rel="preload" href="..." as="script" />` in `index.html` to parallelize the worker's download with the initial HTML payload, significantly reducing initialization time.
+
+## 2025-03-05 - Preloading critical ROM files to avoid network waterfalls
+**Learning:** JSSpeccy fetches default 128K ROMs (`128-0.rom` and `128-1.rom`) asynchronously via `fetch` upon initialization. Because these are triggered by JS execution after the script loads, it creates a network waterfall delaying emulator startup.
+**Action:** Always inspect external emulator startup routines for data file fetches. Preload these critical initialization files in `index.html` using `<link rel="preload" as="fetch" crossorigin />` to fetch them in parallel with the main JS bundles.
+
+## 2025-03-05 - In-Memory Caching for Synchronous Disk I/O
+**Learning:** Repeatedly calling `window.localStorage.getItem` for values that do not change (like consent state) across multiple component mounts introduces unnecessary synchronous disk I/O on the main thread, especially when components unmount and remount or multiple hooks independently read the same value.
+**Action:** When a value from `localStorage` is expected to remain constant during a session (except when explicitly changed by the app), cache the read result in a module-level variable. Ensure tests remain isolated by exposing a cache-clearing utility function.
+
+## 2025-03-05 - Native Script Tags over React Effect Injection for Critical Scripts
+**Learning:** Using React effects (`useEffect`) to dynamically inject a `<script>` tag for a critical dependency delays the script's execution because the browser must wait for the HTML to load, the main JS bundle to execute, the React tree to render, and the effect to finally trigger. Even preloading the script with `<link rel="preload">` doesn't fully eliminate the React render-cycle delay before execution.
+**Action:** For critical external scripts (like emulators) that are needed immediately, include them natively as `<script src="..." async></script>` directly in `index.html`. The browser will fetch and execute them asynchronously without being blocked by the React render cycle, improving Time To Interactive.
+
 ## 2025-03-05 - ResizeObserver and requestAnimationFrame Anti-Pattern
 **Learning:** Wrapping a `ResizeObserver` callback in `requestAnimationFrame` is an anti-pattern when the goal is to keep layout changes in sync. `ResizeObserver` callbacks naturally fire *before* the browser paints the current frame. Wrapping the layout update in `requestAnimationFrame` defers the DOM changes to the *next* frame's paint cycle, causing a 1-frame visual desynchronization (jitter/lag) between the container's resize and the inner content's scaling.
 **Action:** When updating visual properties in a `ResizeObserver` callback to keep elements structurally in sync, execute the DOM mutations directly and synchronously within the callback to ensure they are painted in the same frame as the resize event.
